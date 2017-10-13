@@ -1,10 +1,9 @@
 /**
   ******************************************************************************
   * @file    es_wifi_conf.h
-  * @author  MCD Application Team
-  * @version V1.1.0
-  * @date    04-September-2017
-  * @brief   ES-WIFI configuration.
+  * @author  MCD Application Team, Wi6labs
+  * @brief   es-wifi configuration file
+  * original file in STM32Cube_FW_L4_V1.10.0, file es_wifi_conf_template.h
   ******************************************************************************
   * @attention
   *
@@ -48,10 +47,6 @@
 #ifndef __ES_WIFI_CONF_H
 #define __ES_WIFI_CONF_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif  
-
 #define ES_WIFI_MAX_SSID_NAME_SIZE                  32
 #define ES_WIFI_MAX_PSWD_NAME_SIZE                  32
 #define ES_WIFI_PRODUCT_ID_SIZE                     32
@@ -63,22 +58,14 @@
 
 #define ES_WIFI_DATA_SIZE                           1400
 #define ES_WIFI_MAX_DETECTED_AP                     10
-   
-#define ES_WIFI_TIMEOUT                             0xFFFF
-                                                    
-#define ES_WIFI_USE_PING                            1
-#define ES_WIFI_USE_AWS                             0
-#define ES_WIFI_USE_FIRMWAREUPDATE                  0
-#define ES_WIFI_USE_WPS                             0
-                                                    
-#define ES_WIFI_USE_SPI                             0    
-#define ES_WIFI_USE_UART                            (!ES_WIFI_USE_SPI)   
-   
 
+#define ES_WIFI_TIMEOUT                             0x0FFF
 
-#ifdef __cplusplus
-}
-#endif
+#define NO_SOCKET_AVAIL     255
+
+#define ES_WIFI_PAYLOAD_SIZE     1200
+#define TIMEOUT_OFFSET           100U
+
 #endif /*__ES_WIFI_CONF_H*/
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
