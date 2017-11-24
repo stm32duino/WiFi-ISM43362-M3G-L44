@@ -36,6 +36,9 @@ write().
 
 The WiFi library is based on FW "Inventek eS-WiFi ISM43362-M3G-L44-SPI C3.5.2.3.BETA9".
 
+## Restriction
+WiFiServerST is not stable due to issue of the current WiFi firmware version: C3.5.2.3.BETA9
+
 ## Examples
 
 The examples are close of the Arduino WiFi library but with some adaptations to work
