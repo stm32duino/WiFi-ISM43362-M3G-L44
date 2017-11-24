@@ -19,7 +19,7 @@ List of the adaptations:
 ### WiFiClientST :
 * **available()**: not supported. Always returns 1.
 * **peek()**: not supported. Always returns 0.
-* **flush()**: empty function. Do nothing (already empty in Arduin Wifi API).
+* **flush()**: empty function. Do nothing (already empty in Arduino Wifi API).
 
 ### WiFiUdpST:
 * **endPacket()**: not supported. Always returns 1. The data are sent when you call
@@ -27,7 +27,10 @@ write().
 * **available()**: not supported. Always returns 0.
 * **parsePAcket()**: not supported. Always returns 0.
 * **peek()**: not supported. Always returns 0.
-* **flush()**: Do nothing (already empty in Arduin Wifi API).
+* **flush()**: Do nothing (already empty in Arduino Wifi API).
+
+### WiFiServerST:
+* **status()**: Do nothing (always returns 1).
 
 ## Version
 
@@ -35,7 +38,7 @@ The WiFi library is based on FW "Inventek eS-WiFi ISM43362-M3G-L44-SPI C3.5.2.3.
 
 ## Examples
 
-The examples are close of the Arduino WiFi library but with some adaptions to works
+The examples are close of the Arduino WiFi library but with some adaptations to work
 with the ISM43362-M3G-L44 WiFi module.
 
 ## Documentation
