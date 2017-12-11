@@ -76,17 +76,18 @@ uint8_t wifi_status;
 void init();
 
 public:
-  
+
   // WiFi device with SPI
   WiFiClass(SPIClass *SPIx, uint8_t cs, uint8_t spiIRQ, uint8_t reset, uint8_t wakeup);
   // WiFi device with UART
   WiFiClass(HardwareSerial *UARTx, uint8_t reset, uint8_t wakeup);
   // WiFi device with USB
   WiFiClass(uint8_t tx, uint8_t rx, uint8_t reset, uint8_t wakeup);
-  
+
   int begin(char* ssid);
   int begin(char* ssid, uint8_t key_idx, const char* key);
   int begin(char* ssid, const char *passphrase);
+  void disconnect(void);
   uint8_t status();
   char* firmwareVersion();
   IPAddress localIP();
