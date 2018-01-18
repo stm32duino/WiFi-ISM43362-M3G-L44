@@ -144,7 +144,7 @@ int WiFiClass::begin(char* ssid)
 {
   char dummy_password[] = "DEADBEEFDEADFOODDEADBEEFED";   // Password not use because open connection
   ES_WIFI_SecurityType_t sectype = ES_WIFI_SEC_OPEN;
-  
+
   WiFiClass::init();
   if (DrvWiFi->ES_WIFI_Connect(ssid, dummy_password, sectype) == ES_WIFI_STATUS_OK)
   {
@@ -175,7 +175,7 @@ int WiFiClass::begin(char* ssid, uint8_t key_idx, const char* key)
 
   UNUSED(key_idx); // Parameter unused, arduino compatibility
   WiFiClass::init();
-  
+
   if (DrvWiFi->ES_WIFI_Connect(ssid, key, sectype) == ES_WIFI_STATUS_OK)
   {
     wifi_status = WL_CONNECTED;
@@ -199,7 +199,7 @@ int WiFiClass::begin(char* ssid, uint8_t key_idx, const char* key)
 int WiFiClass::begin(char* ssid, const char *passphrase)
 {
   ES_WIFI_SecurityType_t sectype = ES_WIFI_SEC_WPA_WPA2;
-  
+
   WiFiClass::init();
   if (DrvWiFi->ES_WIFI_Connect(ssid, passphrase, sectype) == ES_WIFI_STATUS_OK)
   {
@@ -213,6 +213,19 @@ int WiFiClass::begin(char* ssid, const char *passphrase)
   }
   wifi_status = WL_CONNECT_FAILED;
   return WL_CONNECT_FAILED;
+}
+
+/*
+* @brief  Disconnect the WiFi shield from the current network
+* @param  none
+* @retval none
+*/
+void WiFiClass::disconnect(void)
+{
+  if (wifi_status != WL_NO_SHIELD) {
+    DrvWiFi->ES_WIFI_Disconnect();
+    wifi_status = WL_DISCONNECTED;
+  }
 }
 
 /*
