@@ -57,7 +57,11 @@ void setup() {
   }
 
   // Set Mac Address of the device on the board optional)
-  WiFi.setMac(macAddrDevice);
+  // WiFi.setMac(macAddrDevice);
+  // Be careful, if setting the MAC adress, you could lose
+  // previously assigned MAC address. If only for test,
+  // you can save your current MAC address, change it,
+  // then set it back to original one.
 
   // attempt to connect to Wifi network:
   while (status != WL_CONNECTED) {
