@@ -1,13 +1,13 @@
 /*
-
- This example  prints the Wifi device's MAC address, and
- scans for available Wifi networks using the Wifi device.
- Print the SSID, RSSI and Encryption type of each networ in view.
- Every ten seconds, it scans again. It doesn't actually
- connect to any network, so no encryption scheme is specified.
-
- See es_wifi_conf.h file and ES_WIFI_MAX_DETECTED_AP variable
- for configuring the max of network you can display.
+ * ScanNetworks
+ *
+ * This example uses the ISM43362-M3G-L44 WiFi module to scan for available
+ * WiFi networks every ten seconds and prints their SSID, RSSI and encryption type.
+ * It also prints the MAC Address of the WiFi module.
+ * It doesn't actually connect to any network, so no encryption scheme is specified.
+ *
+ * See es_wifi_conf.h file and ES_WIFI_MAX_DETECTED_AP variable
+ * for configuring the max of network you can display.
  */
 
 #include <SPI.h>
@@ -34,57 +34,56 @@ SPIClass SPI_3(PC12, PC11, PC10);
 WiFiClass WiFi(&SPI_3, PE0, PE1, PE8, PB13);
 
 void setup() {
-  //Initialize serial and wait for port to open:
+  // Initialize serial communication and wait for serial port to connect:
   Serial.begin(9600);
   while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
+    ;
   }
 
-  // Initialize the WiFi device :
+  // initialize the WiFi module:
   if (WiFi.status() == WL_NO_SHIELD) {
-    Serial.println("WiFi module not present");
+    Serial.println("WiFi module not detected");
     // don't continue:
-    while (true);
+    while (true) ;
   }
 
-  // Print firmware version
+  // print firmware version:
   String fv = WiFi.firmwareVersion();
-  Serial.print("Firwmare version : ");
+  Serial.print("Firmware version: ");
   Serial.println(fv);
   if (fv != "C3.5.2.3.BETA9")
   {
     Serial.println("Please upgrade the firmware");
   }
 
-  // Print WiFi MAC address:
+  // Print WiFi MAC addresses:
   printMacAddress();
 }
 
 void loop() {
-  // scan for existing networks:
+  // scan for existing networks every 10 seconds
   Serial.println("Scanning available networks...");
   listNetworks();
   delay(10000);
 }
 
 void printMacAddress() {
-  // the MAC address of your Wifi device
+  // print the MAC address of your Wifi module:
   byte mac[6];
-
-  // print your MAC address:
   WiFi.macAddress(mac);
-  Serial.print("MAC: ");
-  Serial.print(mac[5], HEX);
-  Serial.print(":");
-  Serial.print(mac[4], HEX);
-  Serial.print(":");
-  Serial.print(mac[3], HEX);
-  Serial.print(":");
-  Serial.print(mac[2], HEX);
-  Serial.print(":");
-  Serial.print(mac[1], HEX);
-  Serial.print(":");
-  Serial.println(mac[0], HEX);
+  Serial.print("MAC address: ");
+  for (uint8_t i = 0; i < 6; i++) {
+    if (mac[i] < 0x10) {
+      Serial.print("0");
+    }
+    Serial.print(mac[i], HEX);
+    if (i != 5) {
+      Serial.print(":");
+    }
+    else {
+      Serial.println();
+    }
+  }
 }
 
 void listNetworks() {
@@ -93,19 +92,19 @@ void listNetworks() {
   int numSsid = WiFi.scanNetworks();
   if (numSsid == -1) {
     Serial.println("Couldn't get a wifi connection");
-    while (true);
+    while (true) ;
   }
 
   // print the list of networks seen:
-  Serial.print("number of available networks:");
+  Serial.print("Number of available networks: ");
   Serial.println(numSsid);
 
-  // print the network number and name for each network found:
+  // print the network number, name, RSSI and encryption type for each network found:
   for (int thisNet = 0; thisNet < numSsid; thisNet++) {
     Serial.print(thisNet);
-    Serial.print(") ");
+    Serial.print(")\tSSID: ");
     Serial.print(WiFi.SSID(thisNet));
-    Serial.print("\tSignal: ");
+    Serial.print("\tRSSI: ");
     Serial.print(WiFi.RSSI(thisNet));
     Serial.print(" dBm");
     Serial.print("\tEncryption: ");
@@ -113,9 +112,9 @@ void listNetworks() {
   }
 }
 
-void printEncryptionType(int thisType) {
+void printEncryptionType(uint8_t encryptionType) {
   // read the encryption type and print out the name:
-  switch (thisType) {
+  switch (encryptionType) {
     case ES_WIFI_SEC_OPEN:
       Serial.println("OPEN");
       break;

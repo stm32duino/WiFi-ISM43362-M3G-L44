@@ -1,9 +1,9 @@
 /*
-  Repeating Wifi Web Client
-
- This sketch connects to a a web server and makes a request
- using an Arduino Wifi device.
-
+ * WifiWebClientRepeating
+ *
+ * This sketch uses the ISM43362-M3G-L44 WiFi module
+ * to connect to a web server and make a HTTP GET request
+ *
  */
 
 #include <SPI.h>
@@ -29,7 +29,7 @@ Configure WiFi:
 SPIClass SPI_3(PC12, PC11, PC10);
 WiFiClass WiFi(&SPI_3, PE0, PE1, PE8, PB13);
 
-char ssid[] = "yourNetwork";      //  your network SSID (name)
+char ssid[] = "yourNetwork";      // your network SSID (name)
 char pass[] = "secretPassword";   // your network password
 int keyIndex = 0;                 // your network key Index number (needed only for WEP)
 bool data_to_read = false;
@@ -53,23 +53,16 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
-  // Initialize the WiFi device :
+  // Initialize the WiFi module:
   if (WiFi.status() == WL_NO_SHIELD) {
-    Serial.println("WiFi module not present");
-    // don't continue:
-    while (true);
-  }
-
-  // check for the presence of the module:
-  if (WiFi.status() == WL_NO_SHIELD) {
-    Serial.println("WiFi module not present");
+    Serial.println("WiFi module not detected");
     // don't continue:
     while (true);
   }
 
   // attempt to connect to Wifi network:
   while (status != WL_CONNECTED) {
-    Serial.print("Attempting to connect to SSID: ");
+    Serial.print("Attempting to connect to WiFi network: ");
     Serial.println(ssid);
     // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
     status = WiFi.begin(ssid, pass);
@@ -77,13 +70,13 @@ void setup() {
     // wait 10 seconds for connection:
     delay(10000);
   }
-  // you're connected now, so print out the status:
+  // you're connected now, so print out the connection status:
   printWifiStatus();
 }
 
 void loop() {
-  // if there's incoming data from the net connection.
-  // send it out the serial port.
+  // if there's incoming data from the server,
+  // print it out to the Serial Monito.
   uint8_t buf[100];
 
   if (data_to_read == true)
@@ -92,7 +85,7 @@ void loop() {
     {
       data_to_read = false; // End of data
     }
-    buf[99] = '\0';              // End off string required by Serial.print
+    buf[99] = '\0';         // End off string required by Serial.print
     Serial.print((char*)buf);
   }
 
@@ -122,26 +115,44 @@ void httpRequest() {
 
     // note the time that the connection was made:
     lastConnectionTime = millis();
-  } else {
-    // if you couldn't make a connection:
+  }
+  else {
+    // if you can't make a connection:
     Serial.println("connection failed");
   }
 }
 
 
 void printWifiStatus() {
-  // print the SSID of the network you're attached to:
+  // print the SSID of the network you're connected to:
   Serial.print("SSID: ");
   Serial.println(WiFi.SSID());
 
-  // print your WiFi device's IP address:
+  // print the IP address of your WiFi module:
   IPAddress ip = WiFi.localIP();
   Serial.print("IP Address: ");
   Serial.println(ip);
+  
+  // print the MAC address of your WiFi module:
+  byte mac[6];
+  WiFi.macAddress(mac);
+  Serial.print("MAC address: ");
+  for (uint8_t i = 0; i < 6; i++) {
+    if (mac[i] < 0x10) {
+      Serial.print("0");
+    }
+    Serial.print(mac[i], HEX);
+    if (i != 5) {
+      Serial.print(":");
+    }
+    else {
+      Serial.println();
+    }
+  }
 
-  // print the received signal strength:
-  long rssi = WiFi.RSSI();
-  Serial.print("signal strength (RSSI):");
+  // print the received signal strength (RSSI):
+  int32_t rssi = WiFi.RSSI();
+  Serial.print("Signal strength (RSSI): ");
   Serial.print(rssi);
   Serial.println(" dBm");
 }

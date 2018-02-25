@@ -1,11 +1,12 @@
 /*
- Chat  Server
-
- A simple server. To use telnet to  your device's IP address and type.
- You can see the client's input in the serial monitor as well.
-
- This example is written for a network using WPA encryption. For
- WEP or WPA, change the Wifi.begin() call accordingly.
+ * WiFiChatServer
+ *
+ * A simple server that broadcats any incoming messages to all connected
+ * clients. To use telnet to your device's IP address and type.
+ * You can see the client's input in the serial monitor as well.
+ *
+ * This example is written for a network using WPA encryption.
+ * For WEP or WPA, change the Wifi.begin() call accordingly.
  */
 
 #include <SPI.h>
@@ -45,22 +46,22 @@ WiFiServer server(23);
 boolean alreadyConnected = false; // whether or not the client was connected previously
 
 void setup() {
-  //Initialize serial and wait for port to open:
+  // Initialize serial communication:
   Serial.begin(9600);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
-  // Initialize the WiFi device :
+  // Initialize the WiFi device:
   if (WiFi.status() == WL_NO_SHIELD) {
-    Serial.println("WiFi shield not present");
+    Serial.println("WiFi shield not detected");
     // don't continue:
     while (true);
   }
 
   // Print firmware version
   String fv = WiFi.firmwareVersion();
-  Serial.print("Firwmare version : ");
+  Serial.print("Firwmare version: ");
   Serial.println(fv);
 
   if (fv != "C3.5.2.3.BETA9")
@@ -79,8 +80,8 @@ void setup() {
     delay(10000);
   }
 
-  printWifiStatus();                 // you're connected now, so print out the status
-  server.begin();                    // start the web server on port 80
+  printWifiStatus();      // you're connected now, so print out the status
+  server.begin();         // start the web server on port 80
 }
 
 
@@ -111,18 +112,35 @@ void loop() {
 
 
 void printWifiStatus() {
-  // print the SSID of the network you're attached to:
+  // print the SSID of the network you're connected to:
   Serial.print("SSID: ");
   Serial.println(WiFi.SSID());
 
-  // print your WiFi shield's IP address:
+  // print the IP address of your WiFi module:
   IPAddress ip = WiFi.localIP();
   Serial.print("IP Address: ");
   Serial.println(ip);
+  
+  // print the MAC address of your WiFi module:
+  byte mac[6];
+  WiFi.macAddress(mac);
+  Serial.print("MAC address: ");
+  for (uint8_t i = 0; i < 6; i++) {
+    if (mac[i] < 0x10) {
+      Serial.print("0");
+    }
+    Serial.print(mac[i], HEX);
+    if (i != 5) {
+      Serial.print(":");
+    }
+    else {
+      Serial.println();
+    }
+  }
 
-  // print the received signal strength:
-  long rssi = WiFi.RSSI();
-  Serial.print("signal strength (RSSI):");
+  // print the received signal strength (RSSI):
+  int32_t rssi = WiFi.RSSI();
+  Serial.print("Signal strength (RSSI): ");
   Serial.print(rssi);
   Serial.println(" dBm");
 }
