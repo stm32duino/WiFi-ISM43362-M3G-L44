@@ -44,7 +44,7 @@ char server[] = "www.google.com";     // name address for Google (using DNS)
 WiFiClient client;
 
 void setup() {
-  // initialize serial communication
+  // initialize serial communication:
   Serial.begin(9600);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
@@ -112,7 +112,6 @@ void loop() {
     while (true) ;
   }
 }
-
 
 void printWifiStatus() {
   // print the SSID of the network you're attached to:

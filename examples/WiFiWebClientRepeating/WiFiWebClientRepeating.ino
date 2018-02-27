@@ -47,7 +47,7 @@ unsigned long lastConnectionTime = 0;              // last time you connected to
 const unsigned long postingInterval = 10L * 1000L; // delay between updates, in milliseconds
 
 void setup() {
-  //Initialize serial and wait for port to open:
+  // Initialize serial and wait for port to open:
   Serial.begin(9600);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
@@ -76,7 +76,7 @@ void setup() {
 
 void loop() {
   // if there's incoming data from the server,
-  // print it out to the Serial Monito.
+  // print it out to the Serial Monitor.
   uint8_t buf[100];
 
   if (data_to_read == true)
@@ -121,7 +121,6 @@ void httpRequest() {
     Serial.println("connection failed");
   }
 }
-
 
 void printWifiStatus() {
   // print the SSID of the network you're connected to:

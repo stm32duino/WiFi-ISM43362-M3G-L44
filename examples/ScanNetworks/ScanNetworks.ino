@@ -44,7 +44,7 @@ void setup() {
   if (WiFi.status() == WL_NO_SHIELD) {
     Serial.println("WiFi module not detected");
     // don't continue:
-    while (true) ;
+    while (true);
   }
 
   // print firmware version:
@@ -56,7 +56,7 @@ void setup() {
     Serial.println("Please upgrade the firmware");
   }
 
-  // Print WiFi MAC addresses:
+  // Print WiFi MAC address:
   printMacAddress();
 }
 
@@ -130,11 +130,13 @@ void printEncryptionType(uint8_t encryptionType) {
     case ES_WIFI_SEC_WPA_WPA2:
       Serial.println("WPA_WPA2");
       break;
-     case ES_WIFI_SEC_WPA2_TKIP:
+    case ES_WIFI_SEC_WPA2_TKIP:
       Serial.println("WPA_TKIP");
       break;
-     case ES_WIFI_SEC_UNKNOWN:
-      Serial.println("UNKNOW");
+    case ES_WIFI_SEC_UNKNOWN:
+      Serial.println("UNKNOWN");
       break;
+    default:
+      Serial.println("UNKNOWN");
   }
 }

@@ -54,7 +54,7 @@ bool ConnectionCreate = false;
 WiFiUDP Udp;
 
 void setup() {
-  // Open serial communication
+  // Open serial communication:
   Serial.begin(9600);
   while (!Serial) {
     ; // wait for serial port to connect.
@@ -173,7 +173,6 @@ void sendNTPpacket(IPAddress& address) {
   Udp.write(packetBuffer, NTP_PACKET_SIZE);
 }
 
-
 void printWifiStatus() {
   // print the SSID of the network you're connected to:
   Serial.print("SSID: ");
@@ -183,6 +182,23 @@ void printWifiStatus() {
   IPAddress ip = WiFi.localIP();
   Serial.print("IP Address: ");
   Serial.println(ip);
+  
+  // print the MAC address of your WiFi module:
+  byte mac[6];
+  WiFi.macAddress(mac);
+  Serial.print("MAC address: ");
+  for (uint8_t i = 0; i < 6; i++) {
+    if (mac[i] < 0x10) {
+      Serial.print("0");
+    }
+    Serial.print(mac[i], HEX);
+    if (i != 5) {
+      Serial.print(":");
+    }
+    else {
+      Serial.println();
+    }
+  }
 
   // print the received signal strength (RSSI):
   long rssi = WiFi.RSSI();

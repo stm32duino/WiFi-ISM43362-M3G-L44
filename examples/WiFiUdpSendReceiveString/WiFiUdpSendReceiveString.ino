@@ -44,7 +44,7 @@ char ReplyBuffer[] = "acknowledged";     // a string to send back
 WiFiUDP Udp;
 
 void setup() {
-  // Initialize serial communication
+  // Initialize serial communication:
   Serial.begin(9600);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
@@ -104,7 +104,6 @@ void loop() {
     Udp.write(ReplyBuffer);
   }
 }
-
 
 void printWifiStatus() {
   // print the SSID of the network you're attached to:
