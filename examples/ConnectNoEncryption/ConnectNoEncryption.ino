@@ -52,8 +52,7 @@ void setup() {
   Serial.print("Firmware version: ");
   Serial.println(fv);
 
-  if (fv != "C3.5.2.3.BETA9")
-  {
+  if (fv != "C3.5.2.3.BETA9") {
     Serial.println("Please upgrade the firmware");
   }
 
@@ -66,7 +65,7 @@ void setup() {
 
   // attempt to connect to Wifi network:
   while (status != WL_CONNECTED) {
-    Serial.print("Attempting to connect to the open WiFi network: ");
+    Serial.print("Attempting to connect to the open WiFi network ");
     Serial.println(ssid);
     status = WiFi.begin(ssid);
 
@@ -75,7 +74,7 @@ void setup() {
   }
 
   // you're connected now, so print out the info about the network:
-  Serial.print("Connected.\nNetwork information: ");
+  Serial.println("Connected.\nNetwork information:");
   printCurrentNet();
   printWifiData();
 }
@@ -83,6 +82,7 @@ void setup() {
 void loop() {
   // check the network connection once every 10 seconds:
   delay(10000);
+  Serial.println("*** Network information ***");
   printCurrentNet();
 }
 
@@ -103,8 +103,7 @@ void printWifiData() {
     Serial.print(mac[i], HEX);
     if (i != 5) {
       Serial.print(":");
-    }
-    else {
+    } else {
       Serial.println();
     }
   }
@@ -136,8 +135,7 @@ void printCurrentNet() {
     Serial.print(bssid[i], HEX);
     if (i != 5) {
       Serial.print(":");
-    }
-    else {
+    } else {
       Serial.println();
     }
   }
@@ -175,9 +173,8 @@ void printEncryptionType(uint8_t encryptionType) {
       Serial.println("WPA_TKIP");
       break;
     case ES_WIFI_SEC_UNKNOWN:
-      Serial.println("UNKNOWN");
-      break;
     default:
       Serial.println("UNKNOWN");
+      break;
   }
 }

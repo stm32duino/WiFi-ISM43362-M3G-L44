@@ -62,7 +62,7 @@ void setup() {
 
   // attempt to connect to Wifi network:
   while (status != WL_CONNECTED) {
-    Serial.print("Attempting to connect to WiFi network: ");
+    Serial.print("Attempting to connect to WiFi network ");
     Serial.println(ssid);
     // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
     status = WiFi.begin(ssid, pass);
@@ -70,7 +70,9 @@ void setup() {
     // wait 10 seconds for connection:
     delay(10000);
   }
+
   // you're connected now, so print out the connection status:
+  Serial.println("Connected.\nNetwork information:");
   printWifiStatus();
 }
 
@@ -79,12 +81,12 @@ void loop() {
   // print it out to the Serial Monitor.
   uint8_t buf[100];
 
-  if (data_to_read == true)
-  {
-    if (client.read(buf, 99) != 99)
-    {
+  if (data_to_read == true) {
+
+    if (client.read(buf, 99) != 99) {
       data_to_read = false; // End of data
     }
+
     buf[99] = '\0';         // End off string required by Serial.print
     Serial.print((char*)buf);
   }
@@ -95,7 +97,6 @@ void loop() {
     data_to_read = true;
     httpRequest();
   }
-
 }
 
 // this method makes a HTTP connection to the server:
@@ -106,7 +107,7 @@ void httpRequest() {
 
   // if there's a successful connection:
   if (client.connect(server, 80)) {
-    Serial.println("connecting...");
+    Serial.println("Connecting to server...");
     // Make a HTTP request:
     client.println("GET /search?q=arduino HTTP/1.1");
     client.println("Host: www.google.com");
@@ -115,10 +116,10 @@ void httpRequest() {
 
     // note the time that the connection was made:
     lastConnectionTime = millis();
-  }
-  else {
+
+  } else {
     // if you can't make a connection:
-    Serial.println("connection failed");
+    Serial.println("Connection failed");
   }
 }
 
@@ -143,8 +144,7 @@ void printWifiStatus() {
     Serial.print(mac[i], HEX);
     if (i != 5) {
       Serial.print(":");
-    }
-    else {
+    } else {
       Serial.println();
     }
   }

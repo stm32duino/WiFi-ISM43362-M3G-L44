@@ -51,8 +51,7 @@ void setup() {
   String fv = WiFi.firmwareVersion();
   Serial.print("Firmware version: ");
   Serial.println(fv);
-  if (fv != "C3.5.2.3.BETA9")
-  {
+  if (fv != "C3.5.2.3.BETA9") {
     Serial.println("Please upgrade the firmware");
   }
 
@@ -79,8 +78,7 @@ void printMacAddress() {
     Serial.print(mac[i], HEX);
     if (i != 5) {
       Serial.print(":");
-    }
-    else {
+    } else {
       Serial.println();
     }
   }
@@ -91,8 +89,8 @@ void listNetworks() {
   Serial.println("** Scan Networks **");
   int numSsid = WiFi.scanNetworks();
   if (numSsid == -1) {
-    Serial.println("Couldn't get a wifi connection");
-    while (true) ;
+    Serial.println("No WiFi network available");
+    while (true);
   }
 
   // print the list of networks seen:
@@ -110,6 +108,7 @@ void listNetworks() {
     Serial.print("\tEncryption: ");
     printEncryptionType(WiFi.encryptionType(thisNet));
   }
+  Serial.println();
 }
 
 void printEncryptionType(uint8_t encryptionType) {
@@ -134,9 +133,8 @@ void printEncryptionType(uint8_t encryptionType) {
       Serial.println("WPA_TKIP");
       break;
     case ES_WIFI_SEC_UNKNOWN:
-      Serial.println("UNKNOWN");
-      break;
     default:
       Serial.println("UNKNOWN");
+      break;
   }
 }

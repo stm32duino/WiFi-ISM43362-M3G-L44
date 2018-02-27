@@ -47,7 +47,6 @@ WiFiClient client;
 char ssid[] = "yourNetwork";      // your network SSID (name)
 char pass[] = "secretPassword";   // your network password
 int keyIndex = 0;                 // your network key Index number (needed only for WEP)
-uint8_t http[1024];               // http buffer to send
 
 int status = WL_IDLE_STATUS;
 WiFiServer server(80);
@@ -63,24 +62,23 @@ void setup() {
 
   // initialize the WiFi module:
   if (WiFi.status() == WL_NO_SHIELD) {
-    Serial.println("WiFi shield not present");
+    Serial.println("WiFi module not detected");
     // don't continue
-    while (true) ;
+    while (true);
   }
 
-  // Print firmware version
+  // print firmware version:
   String fv = WiFi.firmwareVersion();
-  Serial.print("Firwmare version : ");
+  Serial.print("Firwmare version: ");
   Serial.println(fv);
 
-  if (fv != "C3.5.2.3.BETA9")
-  {
+  if (fv != "C3.5.2.3.BETA9") {
     Serial.println("Please upgrade the firmware");
   }
 
   // attempt to connect to Wifi network:
   while (status != WL_CONNECTED) {
-    Serial.print("Attempting to connect to WiFi network named: ");
+    Serial.print("Attempting to connect to WiFi network ");
     // print the network name (SSID)
     Serial.println(ssid);
 
@@ -89,6 +87,8 @@ void setup() {
     // wait 10 seconds for connection:
     delay(10000);
   }
+
+  Serial.println("Connected.\nNetwork information:");
   // you're connected now, so print out the status
   printWifiStatus();
   // start the web server on port 80
@@ -108,10 +108,7 @@ void loop() {
       if (c == '\n') {                       // if the byte is a newline character
         // if the current line is blank, you got two newline characters in a row.
         // that's the end of the client HTTP request, so send a response:
-        if (currentLine.length() == 0)
-        {
-          Serial.println("current 0");
-
+        if (currentLine.length() == 0) {
           // HTTP header, separe the body with a blank line
           client.println("HTTP/1.1 200 OK");
           client.println("Content-Length: 222");
@@ -130,24 +127,21 @@ void loop() {
 
           // break out of the while loop:
           break;
-        }
-        else // if you got a newline, then clear currentLine:
-        {
+
+        } else {  // if you got a newline, then clear currentLine:
           currentLine = "";
         }
-      }
-      else if (c != '\r')       // if you got anything else but a carriage return character,
-      {
-        // Serial.println("+");
+
+      } else if (c != '\r') {   // if you got anything else but a carriage return character,
         currentLine += c;       // add it to the end of the currentLine
       }
+
       // Check to see if the client request was "GET /H" or "GET /L":
-      if (currentLine.endsWith("GET /H"))
-      {
+      if (currentLine.endsWith("GET /H")) {
         digitalWrite(LED_BUILTIN, HIGH);        // GET /H turns the LED on
       }
-      if (currentLine.endsWith("GET /L"))
-      {
+
+      if (currentLine.endsWith("GET /L")) {
         digitalWrite(LED_BUILTIN, LOW);         // GET /L turns the LED off
       }
     }
@@ -179,8 +173,7 @@ void printWifiStatus() {
     Serial.print(mac[i], HEX);
     if (i != 5) {
       Serial.print(":");
-    }
-    else {
+    } else {
       Serial.println();
     }
   }
@@ -199,21 +192,17 @@ void printWifiStatus() {
  * Read data in the WiFi device. Reading byte by byte in very slow. This function
  * allows to read READ_BUFFER byte in the device and returns byte by byte the result.
  */
-int dataRead(char *c)
-{
-  if (read_index == READ_BUFFER)          // No data available in the current buffer
-  {
+int dataRead(char *c) {
+  if (read_index == READ_BUFFER) {     // No data available in the current buffer
     client.read(buf_read, READ_BUFFER);
     read_index = 0;
   }
   *c = buf_read[read_index];
   read_index++;
-  if (*c != '\0')
-  {
+
+  if (*c != '\0') {
     return 1;
-  }
-  else
-  {
+  } else {
     return 0;
   }
 }

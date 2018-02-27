@@ -52,7 +52,7 @@ void setup() {
 
   // initialize the WiFi module:
   if (WiFi.status() == WL_NO_SHIELD) {
-    Serial.println("WiFi module not present");
+    Serial.println("WiFi module not detected");
     // don't continue:
     while (true);
   }
@@ -62,14 +62,13 @@ void setup() {
   Serial.print("Firwmare version: ");
   Serial.println(fv);
 
-  if (fv != "C3.5.2.3.BETA9")
-  {
+  if (fv != "C3.5.2.3.BETA9") {
     Serial.println("Please upgrade the firmware");
   }
 
   // attempt to connect to Wifi network:
   while (status != WL_CONNECTED) {
-    Serial.print("Attempting to connect to WiFi network: ");
+    Serial.print("Attempting to connect to WiFi network ");
     Serial.println(ssid);
     // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
     status = WiFi.begin(ssid, pass);
@@ -96,8 +95,7 @@ void loop() {
   // if there are incoming bytes available
   // from the server, read them and print them:
   uint8_t buf[100];
-  while(client.read(buf, 99))
-  {
+  while(client.read(buf, 99)) {
     buf[99] = '\0';            // End of string required by Serial.print
     Serial.print((char*)buf);
   }
@@ -109,7 +107,7 @@ void loop() {
     client.stop();
 
     // do nothing forevermore:
-    while (true) ;
+    while (true);
   }
 }
 
@@ -134,8 +132,7 @@ void printWifiStatus() {
     Serial.print(mac[i], HEX);
     if (i != 5) {
       Serial.print(":");
-    }
-    else {
+    } else {
       Serial.println();
     }
   }

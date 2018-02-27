@@ -56,24 +56,23 @@ void setup() {
 
   // Initialize the WiFi module:
   if (WiFi.status() == WL_NO_SHIELD) {
-    Serial.println("WiFi shield not present");
+    Serial.println("WiFi module not detcted");
     // don't continue:
     while (true);
   }
 
-  // Print firmware version
+  // Print firmware version:
   String fv = WiFi.firmwareVersion();
-  Serial.print("Firwmare version : ");
+  Serial.print("Firwmare version: ");
   Serial.println(fv);
 
-  if (fv != "C3.5.2.3.BETA9")
-  {
+  if (fv != "C3.5.2.3.BETA9") {
     Serial.println("Please upgrade the firmware");
   }
 
   // attempt to connect to Wifi network:
   while (status != WL_CONNECTED) {
-    Serial.print("Attempting to connect to WiFi network: ");
+    Serial.print("Attempting to connect to WiFi network ");
     Serial.println(ssid);
     // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
     status = WiFi.begin(ssid, pass);
@@ -82,7 +81,9 @@ void setup() {
     delay(10000);
   }
 
-  printWifiStatus();   // you're connected now, so print out the status
+  // you're connected now, so print out the status
+  Serial.println("Connected.\nNetwork information:");
+  printWifiStatus();
   server.begin();      // start the web server on port 80
 }
 
@@ -121,6 +122,7 @@ void loop() {
         client.println("</html>");
         break;
       }
+
       if (c == '\n') {
         // you're starting a new line
         currentLineIsBlank = true;
@@ -135,7 +137,7 @@ void loop() {
     // close the connection:
     client.stop();
     server.begin();
-    Serial.println("Client disonnected");
+    Serial.println("Client disconnected");
   }
 }
 
@@ -160,8 +162,7 @@ void printWifiStatus() {
     Serial.print(mac[i], HEX);
     if (i != 5) {
       Serial.print(":");
-    }
-    else {
+    } else {
       Serial.println();
     }
   }
@@ -181,21 +182,17 @@ void printWifiStatus() {
  * Read data in the WiFi device. Reading byte by byte in very slow, so this function allows to
  * read READ_BUFFER byte in the device and return byte by byte the result.
  */
-int dataRead(char *c)
-{
-  if (read_index == READ_BUFFER)        // No data available in the current buffer
-  {
+int dataRead(char *c) {
+  if (read_index == READ_BUFFER) {        // No data available in the current buffer
     client.read(buf_read, READ_BUFFER);
     read_index = 0;
   }
   *c = buf_read[read_index];
   read_index++;
-  if (*c != '\0')
-  {
+
+  if (*c != '\0') {
     return 1;
-  }
-  else
-  {
+  } else {
     return 0;
   }
 }

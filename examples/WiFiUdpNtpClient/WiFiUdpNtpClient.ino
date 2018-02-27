@@ -62,7 +62,7 @@ void setup() {
 
   // initialize the WiFi module:
   if (WiFi.status() == WL_NO_SHIELD) {
-    Serial.println("WiFi module not present");
+    Serial.println("WiFi module not detcted");
     // don't continue:
     while (true);
   }
@@ -72,14 +72,13 @@ void setup() {
   Serial.print("Firwmare version: ");
   Serial.println(fv);
 
-  if (fv != "C3.5.2.3.BETA9")
-  {
+  if (fv != "C3.5.2.3.BETA9") {
     Serial.println("Please upgrade the firmware");
   }
 
   // attempt to connect to Wifi network:
   while (status != WL_CONNECTED) {
-    Serial.print("Attempting to connect to WiFi network: ");
+    Serial.print("Attempting to connect to WiFi network ");
     Serial.println(ssid);
     // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
     status = WiFi.begin(ssid, pass);
@@ -103,7 +102,7 @@ void loop() {
   // read the packet and store it into the buffer
   int len = Udp.read(packetBuffer, NTP_PACKET_SIZE);
   if (len > 0) {
-    Serial.println("packet received");
+    Serial.println("New NTP packet received");
 
     // the timestamp starts at byte 40 of the received packet and is four bytes,
     // or two words, long. First, extract the two words:
@@ -164,8 +163,7 @@ void sendNTPpacket(IPAddress& address) {
 
   // all NTP fields have been given values, now
   // you can send a packet requesting a timestamp:
-  if (!ConnectionCreate)
-  {
+  if (!ConnectionCreate) {
     // NTP requests are sent to port 123
     Udp.beginPacket(address, 123);
     ConnectionCreate = true;
@@ -194,14 +192,13 @@ void printWifiStatus() {
     Serial.print(mac[i], HEX);
     if (i != 5) {
       Serial.print(":");
-    }
-    else {
+    } else {
       Serial.println();
     }
   }
 
   // print the received signal strength (RSSI):
-  long rssi = WiFi.RSSI();
+  int32_t rssi = WiFi.RSSI();
   Serial.print("Signal strength (RSSI): ");
   Serial.print(rssi);
   Serial.println(" dBm");

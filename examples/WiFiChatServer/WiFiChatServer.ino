@@ -36,7 +36,7 @@ WiFiClass WiFi(&SPI_3, PE0, PE1, PE8, PB13);
 
 WiFiClient client;
 
-char ssid[] = "yourNetwork";      //  your network SSID (name)
+char ssid[] = "yourNetwork";      // your network SSID (name)
 char pass[] = "secretPassword";   // your network password
 int keyIndex = 0;                 // your network key Index number (needed only for WEP)
 
@@ -54,24 +54,23 @@ void setup() {
 
   // Initialize the WiFi device:
   if (WiFi.status() == WL_NO_SHIELD) {
-    Serial.println("WiFi shield not detected");
+    Serial.println("WiFi module not detected");
     // don't continue:
     while (true);
   }
 
-  // Print firmware version
+  // Print firmware version:
   String fv = WiFi.firmwareVersion();
   Serial.print("Firwmare version: ");
   Serial.println(fv);
 
-  if (fv != "C3.5.2.3.BETA9")
-  {
+  if (fv != "C3.5.2.3.BETA9") {
     Serial.println("Please upgrade the firmware");
   }
 
   // attempt to connect to Wifi network:
   while (status != WL_CONNECTED) {
-    Serial.print("Attempting to connect to SSID: ");
+    Serial.print("Attempting to connect to WiFi network ");
     Serial.println(ssid);
     // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
     status = WiFi.begin(ssid, pass);
@@ -80,6 +79,7 @@ void setup() {
     delay(10000);
   }
 
+  Serial.println("Connected.\nNetwork information:");
   printWifiStatus();      // you're connected now, so print out the status
   server.begin();         // start the web server on port 80
 }
@@ -92,7 +92,7 @@ void loop() {
   // when the client sends the first byte, say hello:
   if (client) {
     if (!alreadyConnected) {
-      Serial.println("We have a new client");
+      Serial.println("New client connected");
       client.println("Hello, client!");
       alreadyConnected = true;
     }
@@ -100,8 +100,7 @@ void loop() {
     // read the bytes incoming from the client:
     char thisChar = client.read();
     // Filter on ASCII characters
-    if ((thisChar > 0x30) && (thisChar < 0x7A))
-    {
+    if ((thisChar > 0x30) && (thisChar < 0x7A)) {
       // echo the bytes back to the client:
       server.write(thisChar);
       // echo the bytes to the server as well:
@@ -131,8 +130,7 @@ void printWifiStatus() {
     Serial.print(mac[i], HEX);
     if (i != 5) {
       Serial.print(":");
-    }
-    else {
+    } else {
       Serial.println();
     }
   }

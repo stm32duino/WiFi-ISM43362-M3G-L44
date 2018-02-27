@@ -38,8 +38,8 @@ int keyIndex = 0;                        // your network key Index number (neede
 
 unsigned int localPort = 3000;           // local port to listen on
 
-char packetBuffer[255];                  //buffer to hold incoming packet
-char ReplyBuffer[] = "acknowledged";     // a string to send back
+char packetBuffer[255];                  // buffer to hold incoming packet
+char replyBuffer[] = "acknowledged";     // a string to send back
 
 WiFiUDP Udp;
 
@@ -62,14 +62,13 @@ void setup() {
   Serial.print("Firwmare version: ");
   Serial.println(fv);
 
-  if (fv != "C3.5.2.3.BETA9")
-  {
+  if (fv != "C3.5.2.3.BETA9") {
     Serial.println("Please upgrade the firmware");
   }
 
   // attempt to connect to Wifi network:
   while (status != WL_CONNECTED) {
-    Serial.print("Attempting to connect to WiFi network with SSID: ");
+    Serial.print("Attempting to connect to WiFi network ");
     Serial.println(ssid);
     // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
     status = WiFi.begin(ssid, pass);
@@ -89,8 +88,7 @@ void loop() {
 
   // read the packet into packetBufffer
   int len = Udp.read(packetBuffer, 255);
-  if (len > 0)
-  {
+  if (len > 0) {
     Serial.print("Received a new packet from ");
     IPAddress remoteIp = Udp.remoteIP();
     Serial.print(remoteIp);
@@ -101,7 +99,7 @@ void loop() {
     Serial.println(packetBuffer);
 
     // send a reply, to the client that sent us the packet we received
-    Udp.write(ReplyBuffer);
+    Udp.write(replyBuffer);
   }
 }
 
@@ -126,8 +124,7 @@ void printWifiStatus() {
     Serial.print(mac[i], HEX);
     if (i != 5) {
       Serial.print(":");
-    }
-    else {
+    } else {
       Serial.println();
     }
   }
