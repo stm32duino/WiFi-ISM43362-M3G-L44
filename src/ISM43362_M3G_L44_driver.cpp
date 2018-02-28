@@ -284,10 +284,10 @@ ES_WIFI_SecurityType_t IsmDrvClass::ParseSecurity(char* ptr)
 
   if(strstr(ptr,"Open")) return ES_WIFI_SEC_OPEN;
   else if(strstr(ptr,"WEP")) return ES_WIFI_SEC_WEP;
-  else if(strstr(ptr,"WPA")) return ES_WIFI_SEC_WPA;
-  else if(strstr(ptr,"WPA2")) return ES_WIFI_SEC_WPA2;
   else if(strstr(ptr,"WPA WPA2")) return ES_WIFI_SEC_WPA_WPA2;
   else if(strstr(ptr,"WPA2 TKIP")) return ES_WIFI_SEC_WPA2_TKIP;
+  else if(strstr(ptr,"WPA2")) return ES_WIFI_SEC_WPA2;
+  else if(strstr(ptr,"WPA")) return ES_WIFI_SEC_WPA;
   else return ES_WIFI_SEC_UNKNOWN;
 }
 
