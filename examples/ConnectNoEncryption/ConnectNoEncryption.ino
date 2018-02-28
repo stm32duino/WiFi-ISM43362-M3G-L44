@@ -1,9 +1,10 @@
 /*
-
- This example connects to an unencrypted Wifi network.
- Then it prints the  MAC address of the Wifi module,
- the IP address obtained, and other network details.
- It also set the MAC address of the device.
+ * ConnectNoEncryption
+ *
+ * This example is used to connect to an unencrypted WiFi network.
+ * Then it prints the MAC address of the WiFi module,
+ * the IP address obtained, and other network information.
+ * It also shows how to set the MAC address of the WiFi module.
  */
 #include <SPI.h>
 #include <WiFiST.h>
@@ -33,30 +34,29 @@ int status = WL_IDLE_STATUS;                  // the Wifi radio's status
 uint8_t macAddrDevice[6] = {0,1,2,3,4,5};     // the mac address you want set in the WiFi device
 
 void setup() {
-  //Initialize serial and wait for port to open:
+  // initialize serial communication and wait for serial port to open:
   Serial.begin(9600);
   while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
+    ;
   }
 
-  // Initialize the device :
+  // initialize the wifi module:
   if (WiFi.status() == WL_NO_SHIELD) {
-    Serial.println("WiFi device not detected");
+    Serial.println("WiFi module not detected");
     // don't continue:
     while (true);
   }
 
-  // Print firmware version
+  // print firmware version:
   String fv = WiFi.firmwareVersion();
-  Serial.print("Firwmare version : ");
+  Serial.print("Firmware version: ");
   Serial.println(fv);
 
-  if (fv != "C3.5.2.3.BETA9")
-  {
+  if (fv != "C3.5.2.3.BETA9") {
     Serial.println("Please upgrade the firmware");
   }
 
-  // Set Mac Address of the device on the board optional)
+  // Set Mac Address of the device on the board (optional)
   // WiFi.setMac(macAddrDevice);
   // Be careful, if setting the MAC adress, you could lose
   // previously assigned MAC address. If only for test,
@@ -65,7 +65,7 @@ void setup() {
 
   // attempt to connect to Wifi network:
   while (status != WL_CONNECTED) {
-    Serial.print("Attempting to connect to open SSID: ");
+    Serial.print("Attempting to connect to the open WiFi network ");
     Serial.println(ssid);
     status = WiFi.begin(ssid);
 
@@ -73,8 +73,8 @@ void setup() {
     delay(10000);
   }
 
-  // you're connected now, so print out the data:
-  Serial.print("You're connected to the network");
+  // you're connected now, so print out the info about the network:
+  Serial.println("Connected.\nNetwork information:");
   printCurrentNet();
   printWifiData();
 }
@@ -82,6 +82,7 @@ void setup() {
 void loop() {
   // check the network connection once every 10 seconds:
   delay(10000);
+  Serial.println("*** Network information ***");
   printCurrentNet();
 }
 
@@ -91,31 +92,31 @@ void printWifiData() {
   Serial.print("IP Address: ");
   Serial.println(ip);
 
-  // print your MAC address:
+  // print the MAC address of your WiFi module:
   byte mac[6];
   WiFi.macAddress(mac);
   Serial.print("MAC address: ");
-  Serial.print(mac[5], HEX);
-  Serial.print(":");
-  Serial.print(mac[4], HEX);
-  Serial.print(":");
-  Serial.print(mac[3], HEX);
-  Serial.print(":");
-  Serial.print(mac[2], HEX);
-  Serial.print(":");
-  Serial.print(mac[1], HEX);
-  Serial.print(":");
-  Serial.println(mac[0], HEX);
+  for (uint8_t i = 0; i < 6; i++) {
+    if (mac[i] < 0x10) {
+      Serial.print("0");
+    }
+    Serial.print(mac[i], HEX);
+    if (i != 5) {
+      Serial.print(":");
+    } else {
+      Serial.println();
+    }
+  }
 
   // print your subnet mask:
   IPAddress subnet = WiFi.subnetMask();
   Serial.print("NetMask: ");
   Serial.println(subnet);
 
-  // print your gateway address:
-  IPAddress gateway = WiFi.gatewayIP();
-  Serial.print("Gateway: ");
-  Serial.println(gateway);
+  // print your gateway IP address:
+  IPAddress gatewayIP = WiFi.gatewayIP();
+  Serial.print("Gateway IP: ");
+  Serial.println(gatewayIP);
 }
 
 void printCurrentNet() {
@@ -123,29 +124,57 @@ void printCurrentNet() {
   Serial.print("SSID: ");
   Serial.println(WiFi.SSID());
 
-  // print the MAC address of the router you're attached to:
+  // print the BSSID which is the MAC address of the router you're attached to:
   byte bssid[6];
   WiFi.BSSID(bssid);
   Serial.print("BSSID: ");
-  Serial.print(bssid[5], HEX);
-  Serial.print(":");
-  Serial.print(bssid[4], HEX);
-  Serial.print(":");
-  Serial.print(bssid[3], HEX);
-  Serial.print(":");
-  Serial.print(bssid[2], HEX);
-  Serial.print(":");
-  Serial.print(bssid[1], HEX);
-  Serial.print(":");
-  Serial.println(bssid[0], HEX);
+  for (uint8_t i = 0; i < 6; i++) {
+    if (bssid[i] < 0x10) {
+      Serial.print("0");
+    }
+    Serial.print(bssid[i], HEX);
+    if (i != 5) {
+      Serial.print(":");
+    } else {
+      Serial.println();
+    }
+  }
 
   // print the received signal strength:
-  long rssi = WiFi.RSSI();
-  Serial.print("signal strength (RSSI):");
+  int32_t rssi = WiFi.RSSI();
+  Serial.print("Signal strength (RSSI): ");
   Serial.println(rssi);
 
   // print the encryption type:
-  byte encryption = WiFi.encryptionType();
-  Serial.print("Encryption Type:");
-  Serial.println(encryption, HEX);
+  Serial.print("Encryption Type: ");
+  printEncryptionType(WiFi.encryptionType());
+  Serial.println();
+}
+
+void printEncryptionType(uint8_t encryptionType) {
+  // read the encryption type and print out the name:
+  switch (encryptionType) {
+    case ES_WIFI_SEC_OPEN:
+      Serial.println("OPEN");
+      break;
+    case ES_WIFI_SEC_WEP:
+      Serial.println("WEP");
+      break;
+    case ES_WIFI_SEC_WPA:
+      Serial.println("WPA");
+      break;
+    case ES_WIFI_SEC_WPA2:
+      Serial.println("WPA2");
+      break;
+    case ES_WIFI_SEC_WPA_WPA2:
+      Serial.println("WPA_WPA2");
+      break;
+    case ES_WIFI_SEC_WPA2_TKIP:
+      Serial.println("WPA_TKIP");
+      break;
+    case ES_WIFI_SEC_UNKNOWN:
+    default:
+      Serial.println("UNKNOWN");
+      break;
+  }
 }
