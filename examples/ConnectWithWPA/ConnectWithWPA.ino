@@ -59,10 +59,14 @@ void setup() {
 
   // attempt to connect to Wifi network:
   while (status != WL_CONNECTED) {
-    Serial.print("Attempting to connect to WPA network: ");
+    Serial.print("Attempting to connect to WPA/WPA2 network: ");
     Serial.println(ssid);
-    // Connect to WPA/WPA2 network:
+    // Connect to WPA2 network:
     status = WiFi.begin(ssid, pass);
+    if (status != WL_CONNECTED) {
+      // Connect to WPA (TKIP) network:
+      status = WiFi.begin(ssid, pass, ES_WIFI_SEC_WPA);
+    }
 
     // wait 10 seconds for connection:
     delay(10000);

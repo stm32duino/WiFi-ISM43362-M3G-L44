@@ -22,8 +22,7 @@ List of the adaptations:
 * **flush()**: empty function. Do nothing (already empty in Arduino Wifi API).
 
 ### WiFiUdpST:
-* **endPacket()**: not supported. Always returns 1. The data are sent when you call
-write().
+* **endPacket()**: not supported. Always returns 1. The data are sent when you call write().
 * **available()**: not supported. Always returns 0.
 * **parsePAcket()**: not supported. Always returns 0.
 * **peek()**: not supported. Always returns 0.
@@ -36,8 +35,14 @@ write().
 
 The WiFi library is based on FW "Inventek eS-WiFi ISM43362-M3G-L44-SPI C3.5.2.3.BETA9".
 
+## Supported Secure Wi-Fi authentication by the Wi-Fi module Inventek ISM43362-M3G-L44:
+* WEP-128
+* WPA-PSK (TKIP)
+* WPA2-PSK
+
 ## Restriction
-WiFiServerST is not stable due to issue of the current WiFi firmware version: C3.5.2.3.BETA9
+* WiFiServerST is not stable due to issue of the current WiFi firmware version: C3.5.2.3.BETA9
+* WEP-128 is not functional. Issue probably due to the current WiFi firmware version: C3.5.2.3.BETA9
 
 ## Examples
 

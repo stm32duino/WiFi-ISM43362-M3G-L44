@@ -195,11 +195,10 @@ int WiFiClass::begin(char* ssid, uint8_t key_idx, const char* key)
 * @param  ssid: Pointer to the SSID string.
 * @param  passphrase: Passphrase. Valid characters in a passphrase
 *         must be between ASCII 32-126 (decimal).
+* @param  sectype: Security type (default: ES_WIFI_SEC_WPA_WPA2)
 */
-int WiFiClass::begin(char* ssid, const char *passphrase)
+int WiFiClass::begin(char* ssid, const char *passphrase, ES_WIFI_SecurityType_t sectype)
 {
-  ES_WIFI_SecurityType_t sectype = ES_WIFI_SEC_WPA_WPA2;
-
   WiFiClass::init();
   if (DrvWiFi->ES_WIFI_Connect(ssid, passphrase, sectype) == ES_WIFI_STATUS_OK)
   {
