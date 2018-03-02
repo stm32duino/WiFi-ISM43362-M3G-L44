@@ -161,7 +161,7 @@ int WiFiClass::begin(char* ssid)
 }
 
 /**
-* @brief  Start Wifi connection with WEP encryption.
+* @brief  Start WiFi connection with WEP encryption.
 *         Configure a key into the device. The key type (WEP-40, WEP-104) is
 *         determined by the size of the key (5 bytes for WEP-40, 13 bytes for WEP-104).
 * @param  ssid: Pointer to the SSID string.
@@ -173,7 +173,7 @@ int WiFiClass::begin(char* ssid, uint8_t key_idx, const char* key)
 {
   ES_WIFI_SecurityType_t sectype = ES_WIFI_SEC_WEP;
 
-  UNUSED(key_idx); // Parameter unused, arduino compatibility
+  UNUSED(key_idx); // Parameter unused, Arduino compatibility
   WiFiClass::init();
 
   if (DrvWiFi->ES_WIFI_Connect(ssid, key, sectype) == ES_WIFI_STATUS_OK)
@@ -191,7 +191,7 @@ int WiFiClass::begin(char* ssid, uint8_t key_idx, const char* key)
 }
 
 /*
-* @brief  Start Wifi connection with passphrase
+* @brief  Start WiFi connection with passphrase
 * @param  ssid: Pointer to the SSID string.
 * @param  passphrase: Passphrase. Valid characters in a passphrase
 *         must be between ASCII 32-126 (decimal).
@@ -266,9 +266,9 @@ uint8_t* WiFiClass::macAddress(uint8_t* mac)
 }
 
 /*
-* @brief  Get the gateway ip address
+* @brief  Get the gateway IP address
 * @param  None
-* @retval gateway ip address value
+* @retval gateway IP address value
 */
  IPAddress WiFiClass::gatewayIP() {
   return DrvWiFi->ES_WIFI_GetGatewayIP();

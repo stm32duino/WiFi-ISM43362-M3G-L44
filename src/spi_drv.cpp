@@ -122,9 +122,9 @@ void SpiDrvClass::Spi_Wifi_Reset() {
 int8_t SpiDrvClass::IO_Init(void)
 {
   uint8_t Prompt[6];                     // data receive
-  uint8_t count = 0;                     // Number of bytes receive
+  uint8_t count = 0;                     // number of bytes receive
   uint32_t start;                        // start time for timeout
-  uint16_t dummy_send = 0x0A0A;          // Data to feed the clock
+  uint16_t dummy_send = 0x0A0A;          // data to feed the clock
   uint16_t read_value;                   // data read
 
   /* pin configuration                                                       */
@@ -138,7 +138,7 @@ int8_t SpiDrvClass::IO_Init(void)
   pinMode(csPin, OUTPUT);
   digitalWrite(csPin, HIGH);
 
-  /* Clock = 10MHz (Inventek WIFI module supportes up to 20MHz)               */
+  /* Clock = 10MHz (Inventek Wi-Fi module supports up to 20MHz)               */
   Settings_43362 = new SPISettings(10000000, MSBFIRST, SPI_MODE0);
   ISM43362->beginTransaction(*Settings_43362);
 
@@ -168,7 +168,7 @@ int8_t SpiDrvClass::IO_Init(void)
       return -1;
     }
   }
-  // Check recieve sequence
+  // Check receive sequence
   if((Prompt[0] != 0x15) ||(Prompt[1] != 0x15) ||(Prompt[2] != '\r')||
        (Prompt[3] != '\n') ||(Prompt[4] != '>') ||(Prompt[5] != ' '))
   {
@@ -202,7 +202,7 @@ void SpiDrvClass::IO_Delay(uint32_t time)
 }
 
 /**
- * @brief  Send wifi Data thru SPI
+ * @brief  Send Wi-Fi Data through SPI
  * @param  pdata   : pointer to data
  * @param  len     : Data length in byte
  * @param  timeout : send timeout in ms
@@ -217,7 +217,7 @@ int16_t SpiDrvClass::IO_Send( uint8_t *pdata,  uint16_t len, uint32_t timeout)
 
   start = millis();
 
-  // Wait device ready to recieve data
+  // Wait device ready to receive data
   while (!Spi_Get_Data_Ready_State())
   {
     if((millis() - start ) > timeout)
@@ -233,7 +233,7 @@ int16_t SpiDrvClass::IO_Send( uint8_t *pdata,  uint16_t len, uint32_t timeout)
   {
     if (data_tx == len-1)
     {
-      // Data to send are odd, need pading
+      // Data to send are odd, need padding
       Padding[0] = pdata[len-1];
       Padding[1] = '\n';
       data_send = Padding[0] | (Padding[1] << 8);
@@ -249,18 +249,18 @@ int16_t SpiDrvClass::IO_Send( uint8_t *pdata,  uint16_t len, uint32_t timeout)
 }
 
 /**
- * @brief  Recieve wifi Data from SPI
+ * @brief  Receive Wi-Fi Data from SPI
  * @param  pdata   : pointer to data
  * @param  len     : Data length i byte
  * @param  timeout : send timeout in mS
- * @retval Length of recieved data (payload)
+ * @retval Length of received data (payload)
  */
 int16_t SpiDrvClass::IO_Receive(uint8_t *pData, uint16_t len, uint32_t timeout)
 {
   int16_t length = 0;                 // length of data receive
-  uint8_t tmp[2];                     // 2 bytes buffer of recieve
+  uint8_t tmp[2];                     // 2 bytes buffer of receive
   uint32_t start;                     // start time for timeout
-  uint16_t dummy_send = 0x0A0A;       // Data to feed the clock
+  uint16_t dummy_send = 0x0A0A;       // data to feed the clock
   uint16_t read_value;                // data read
 
   start = millis();
@@ -276,7 +276,7 @@ int16_t SpiDrvClass::IO_Receive(uint8_t *pData, uint16_t len, uint32_t timeout)
     }
   }
 
-  // Recieve device data
+  // Receive device data
   Spi_Slave_Select();
   start = millis();
   while (Spi_Get_Data_Ready_State())
@@ -287,7 +287,7 @@ int16_t SpiDrvClass::IO_Receive(uint8_t *pData, uint16_t len, uint32_t timeout)
      tmp[0] = (uint8_t)(read_value & 0x00FF);
      tmp[1] = (uint8_t)((read_value & 0xFF00) >> 8);
 
-      /* let some time to hardware to change dara ready signal (the IRQpin) */
+      /* let some time to hardware to change data ready signal (the IRQpin) */
       if(tmp[1] == 0x15)
       {
        IO_Delay(1);

@@ -99,10 +99,10 @@ typedef enum {
   ES_WIFI_MQTT_CONNECTION       = 4,
 }ES_WIFI_ConnType_t;
 
-/* Security settings for wifi network */
+/* Security settings for Wi-Fi network */
 typedef enum {
-  ES_WIFI_SEC_OPEN = 0x00,          /*!< Wifi is open */
-  ES_WIFI_SEC_WEP  = 0x01,          /*!< Wired Equivalent Privacy option for wifi security. \note This mode can't be used when setting up ES_WIFI wifi */
+  ES_WIFI_SEC_OPEN = 0x00,          /*!< Wi-Fi is open */
+  ES_WIFI_SEC_WEP  = 0x01,          /*!< Wired Equivalent Privacy option for Wi-Fi security. \note This mode can't be used when setting up ES_WIFI Wi-Fi */
   ES_WIFI_SEC_WPA  = 0x02,          /*!< Wi-Fi Protected Access */
   ES_WIFI_SEC_WPA2 = 0x03,          /*!< Wi-Fi Protected Access 2 */
   ES_WIFI_SEC_WPA_WPA2= 0x04,       /*!< Wi-Fi Protected Access with both modes */
@@ -130,7 +130,7 @@ typedef enum {
         COMM_USB_VCP
 } comm_mode;
 
-/* virtual class necessary to abstract the wifi device                       */
+/* virtual class necessary to abstract the Wi-Fi device                       */
 class WiFiDrvClass {
 
 protected :
