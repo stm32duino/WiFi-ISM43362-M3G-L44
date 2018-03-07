@@ -309,7 +309,7 @@ typedef struct {
 class IsmDrvClass : public WiFiDrvClass {
 
 private :
-  DriverClass *Drv;                             // pointer on means of communicaiton
+  DriverClass *Drv;                             // pointer on means of communication
   ES_WIFIObject_t EsWifiObj;                    // settings pointer
   ES_WIFI_SystemConfig_t ESWifiSysObj;          // configuration pointer
   ES_WIFI_APs_t ESWifiApObj;                    // list of network

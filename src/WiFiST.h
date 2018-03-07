@@ -86,7 +86,7 @@ public:
 
   int begin(char* ssid);
   int begin(char* ssid, uint8_t key_idx, const char* key);
-  int begin(char* ssid, const char *passphrase);
+  int begin(char* ssid, const char *passphrase, ES_WIFI_SecurityType_t sectype = ES_WIFI_SEC_WPA_WPA2);
   void disconnect(void);
   uint8_t status();
   char* firmwareVersion();

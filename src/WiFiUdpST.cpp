@@ -71,13 +71,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 WiFiUDP::WiFiUDP() : _sock(NO_SOCKET_AVAIL) {}
 
 /**
- * @brief  Initialize start listening on specificied port
+ * @brief  Initialize start listening on specified port
  * @param  port : port to listen
  * @retval Returns 1 if successful, 0 if there are no sockets available to use
  */
 uint8_t WiFiUDP::begin(uint16_t port) {
 
-  int8_t sock = DrvWiFi->getFreeSocket();    // get next free socket
+  int8_t sock = DrvWiFi->getFreeSocket(); // get next free socket
   if (sock != -1)
   {
     // Set connection parameter and start server
@@ -115,7 +115,7 @@ int WiFiUDP::beginPacket(IPAddress ip, uint16_t port)
   int8_t sock;
   if (_sock == NO_SOCKET_AVAIL)
   {
-    sock = DrvWiFi->getFreeSocket();  // get next free socket
+    sock = DrvWiFi->getFreeSocket(); // get next free socket
     if(sock != -1)
     {
       _sock = sock;
@@ -123,7 +123,7 @@ int WiFiUDP::beginPacket(IPAddress ip, uint16_t port)
   }
   if (_sock != NO_SOCKET_AVAIL)
   {
-    // Set connection parameter and start client connection
+    // set connection parameter and start client connection
     DrvWiFi->ES_WIFI_SetConnectionParam(_sock, ES_WIFI_UDP_CONNECTION, port, ip);
     DrvWiFi->ES_WIFI_StartClientConnection(_sock);
     return 1;
@@ -139,7 +139,7 @@ int WiFiUDP::beginPacket(IPAddress ip, uint16_t port)
  */
 int WiFiUDP::beginPacket(const char *host, uint16_t port)
 {
-  IPAddress remote_addr;         // IP address of the host
+  IPAddress remote_addr; // IP address of the host
 
   DrvWiFi->ES_WIFI_DNS_LookUp(host, &remote_addr);
   return beginPacket(remote_addr, port);
@@ -168,7 +168,7 @@ int WiFiUDP::endPacket()
  */
 size_t WiFiUDP::write(const uint8_t *buffer, size_t size)
 {
-  uint16_t SentLen = 0;   // Number of data really send
+  uint16_t SentLen = 0; // number of data really send
   uint8_t *temp = (uint8_t*)buffer;
 
   DrvWiFi->ES_WIFI_SendResp(_sock, temp, size, &SentLen, WIFI_TIMEOUT);
@@ -195,7 +195,7 @@ size_t WiFiUDP::write(uint8_t byte)
 int WiFiUDP::available() {
   /***************************************************************************/
   /*                               NOT SUPPORTED                             */
-  /* This functionnalty doesn't exist in the current device.                 */
+  /* This functionality doesn't exist in the current device.                 */
   /***************************************************************************/
   return 0;
 }
@@ -217,8 +217,8 @@ int WiFiUDP::parsePacket()
  */
 int WiFiUDP::read()
 {
-  uint8_t b = 0;                    // data received
-  uint16_t RecLen = 0;              // Number of data received
+  uint8_t b = 0; // data received
+  uint16_t RecLen = 0; // Number of data received
 
   DrvWiFi->ES_WIFI_ReceiveData(_sock, &b, 1, &RecLen, WIFI_TIMEOUT);
   return b;
@@ -232,12 +232,12 @@ int WiFiUDP::read()
  */
 int WiFiUDP::read(unsigned char* buffer, size_t len)
 {
-  uint16_t RecLen = 0;              // Number of data received
+  uint16_t RecLen = 0; // Number of data received
 
   DrvWiFi->ES_WIFI_ReceiveData(_sock, buffer, len, &RecLen, WIFI_TIMEOUT);
   if (RecLen < len)
   {
-    buffer[RecLen] = '\0';  // String end
+    buffer[RecLen] = '\0'; // string end
   }
   return RecLen;
 }
@@ -252,7 +252,7 @@ int WiFiUDP::peek()
 {
   /***************************************************************************/
   /*                               NOT SUPPORTED                             */
-  /* This functionnalty doesn't exist in the current device.                 */
+  /* This functionality doesn't exist in the current device.                 */
   /***************************************************************************/
   return 0;
 }

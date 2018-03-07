@@ -83,7 +83,7 @@ WiFiClient::WiFiClient(uint8_t sock) : _sock(sock) {
 
  /**
  * @brief  Start building up a packet to send to the remote host
- * @param  ip : ip to which to send the packet
+ * @param  ip : IP to which to send the packet
  * @param  port : port to which to send the packet
  * @retval 1 if successful, 0 if there was a problem with the supplied IP address or port
  */
@@ -92,7 +92,7 @@ int WiFiClient::connect(IPAddress ip, uint16_t port)
   int8_t sock;
   if (_sock == NO_SOCKET_AVAIL)
   {
-    sock = DrvWiFi->getFreeSocket();  // get next free socket
+    sock = DrvWiFi->getFreeSocket(); // get next free socket
     if(sock != -1)
     {
       _sock = sock;
@@ -100,7 +100,7 @@ int WiFiClient::connect(IPAddress ip, uint16_t port)
   }
   if (_sock != NO_SOCKET_AVAIL)
   {
-    // Set connection parameter and start client
+    // set connection parameter and start client
     DrvWiFi->ES_WIFI_SetConnectionParam(_sock, ES_WIFI_TCP_CONNECTION, port, ip);
     DrvWiFi->ES_WIFI_StartClientConnection(_sock);
     return 1;
@@ -116,7 +116,7 @@ int WiFiClient::connect(IPAddress ip, uint16_t port)
  */
 int WiFiClient::connect(const char* host, uint16_t port)
 {
-  IPAddress remote_addr;         // IP address of the host
+  IPAddress remote_addr; // IP address of the host
 
   DrvWiFi->ES_WIFI_DNS_LookUp(host, &remote_addr);
   return connect(remote_addr, port);
@@ -130,7 +130,7 @@ int WiFiClient::connect(const char* host, uint16_t port)
  */
 size_t WiFiClient::write(const uint8_t *buf, size_t size)
 {
-  uint16_t SentLen = 0;   // Number of data really send
+  uint16_t SentLen = 0; // number of data really send
   uint8_t *temp = (uint8_t*)buf;
 
   DrvWiFi->ES_WIFI_SendResp(_sock, temp, size, &SentLen, WIFI_TIMEOUT);
@@ -157,7 +157,7 @@ int WiFiClient::available()
 {
   /***************************************************************************/
   /*                               NOT SUPPORTED                             */
-  /* This functionnalty doesn't exist in the current device.                 */
+  /* This functionality doesn't exist in the current device.                 */
   /***************************************************************************/
   return 1;
 }
@@ -169,8 +169,8 @@ int WiFiClient::available()
  */
 int WiFiClient::read()
 {
-  uint8_t b = '\0';                 // data received
-  uint16_t RecLen = 0;              // Number of data received
+  uint8_t b = '\0'; // data received
+  uint16_t RecLen = 0; // number of data received
   DrvWiFi->ES_WIFI_ReceiveData(_sock, &b, 1, &RecLen, WIFI_TIMEOUT);
   return b;
 }
@@ -183,12 +183,12 @@ int WiFiClient::read()
  */
 int WiFiClient::read(uint8_t* buf, size_t size)
 {
-  uint16_t RecLen = 0;              // Number of data received
+  uint16_t RecLen = 0; // number of data received
 
   DrvWiFi->ES_WIFI_ReceiveData(_sock, buf, size, &RecLen, WIFI_TIMEOUT);
   if (RecLen < size)
   {
-    buf[RecLen] = '\0';  // String end
+    buf[RecLen] = '\0'; // string end
   }
   return RecLen;
 }
@@ -203,7 +203,7 @@ int WiFiClient::peek()
 {
   /***************************************************************************/
   /*                               NOT SUPPORTED                             */
-  /* This functionnalty doesn't exist in the current device.                 */
+  /* This functionality doesn't exist in the current device.                 */
   /***************************************************************************/
   return 0;
 }
@@ -212,7 +212,7 @@ int WiFiClient::peek()
  * @brief  Finish reading the current packet
  * @param  None
  * @retval None
- * @Note Funciton not supported
+ * @Note Function not supported
  */
 void WiFiClient::flush() {
   /***************************************************************************/
@@ -222,7 +222,7 @@ void WiFiClient::flush() {
 }
 
 /**
- * @brief  Close the cilent connection
+ * @brief  Close the client connection
  * @param  None
  * @retval None
  */
