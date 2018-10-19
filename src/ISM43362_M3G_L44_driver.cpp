@@ -7,37 +7,37 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright © 2017 STMicroelectronics International N.V. 
+  * <h2><center>&copy; Copyright © 2017 STMicroelectronics International N.V.
   * All rights reserved.</center></h2>
   *
-  * Redistribution and use in source and binary forms, with or without 
+  * Redistribution and use in source and binary forms, with or without
   * modification, are permitted, provided that the following conditions are met:
   *
-  * 1. Redistribution of source code must retain the above copyright notice, 
+  * 1. Redistribution of source code must retain the above copyright notice,
   *    this list of conditions and the following disclaimer.
   * 2. Redistributions in binary form must reproduce the above copyright notice,
   *    this list of conditions and the following disclaimer in the documentation
   *    and/or other materials provided with the distribution.
-  * 3. Neither the name of STMicroelectronics nor the names of other 
-  *    contributors to this software may be used to endorse or promote products 
+  * 3. Neither the name of STMicroelectronics nor the names of other
+  *    contributors to this software may be used to endorse or promote products
   *    derived from this software without specific written permission.
-  * 4. This software, including modifications and/or derivative works of this 
+  * 4. This software, including modifications and/or derivative works of this
   *    software, must execute solely and exclusively on microcontroller or
   *    microprocessor devices manufactured by or for STMicroelectronics.
-  * 5. Redistribution and use of this software other than as permitted under 
-  *    this license is void and will automatically terminate your rights under 
-  *    this license. 
+  * 5. Redistribution and use of this software other than as permitted under
+  *    this license is void and will automatically terminate your rights under
+  *    this license.
   *
-  * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS" 
-  * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT 
-  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+  * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT
+  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
   * PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD PARTY INTELLECTUAL PROPERTY
-  * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT 
+  * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT
   * SHALL STMICROELECTRONICS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
   * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
-  * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
-  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+  * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
   * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
   * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
@@ -99,7 +99,7 @@ uint8_t reset, uint8_t wakeup) {
 */
 IsmDrvClass::IsmDrvClass(HardwareSerial *UARTx,  uint8_t reset, uint8_t wakeup) {
   /* Call UART constructor                                                   */
-  /* TODO: neither developped nor tested on DISCO L475VG IOT because the WiFi
+  /* TODO: neither developed nor tested on DISCO L475VG IOT because the WiFi
     module is only connected by SPI. An UART driver needs to be added.
     This constructor is given as example. Maybe it needs to be adapted.
   */
@@ -125,7 +125,7 @@ IsmDrvClass::IsmDrvClass(HardwareSerial *UARTx,  uint8_t reset, uint8_t wakeup) 
 */
 IsmDrvClass::IsmDrvClass(uint8_t tx, uint8_t rx, uint8_t reset, uint8_t wakeup) {
   /* Call USB constructor                                                    */
-  /* TODO: neither developped nor tested on DISCO L475VG IOT because the WiFi
+  /* TODO: neither developed nor tested on DISCO L475VG IOT because the WiFi
     module is only connected by SPI. An USB driver needs to be added.
     This constructor is given as example. Maybe it needs to be adapted.
   */
@@ -649,7 +649,7 @@ ES_WIFI_Status_t IsmDrvClass::AT_ExecuteCommand(uint8_t* cmd, uint8_t *pdata)
   * @param  pdata: pointer to returned data
   * @retval Operation Status.
   */
-ES_WIFI_Status_t IsmDrvClass::AT_RequestSendData(uint8_t* cmd, 
+ES_WIFI_Status_t IsmDrvClass::AT_RequestSendData(uint8_t* cmd,
 uint16_t len, uint8_t *pdata)
 {
   if((cmd == NULL) || (pdata == NULL)) {
@@ -1172,7 +1172,7 @@ uint8_t* IsmDrvClass::ES_WIFI_GetBSSID(uint8_t *bssid)
     // Find our access point
     if (strcmp((char*)ESWifiApObj.AP[j].SSID, (char*)EsWifiObj.NetSettings.SSID) == 0)
     {
-      // cpy mac address of the access point
+      // copy mac address of the access point
       for (int i=0; i<6; i++)
       {
       bssid[i] = ESWifiApObj.AP[j].MAC[i];
@@ -1942,9 +1942,9 @@ void IsmDrvClass::ES_WIFI_SendResp(uint8_t Socket, uint8_t *pdata,
   * @brief  Receive an amount data over WIFI.
   * @param  Socket      : number of the socket
   * @param  pdata       : pointer to data
-  * @param  Reqlen      : pointer to the length of the data to be recieved
-  * @param  Recievedlen : Number of bata really recieved
-  * @param  timeout     : Timeout for recieving the data
+  * @param  Reqlen      : pointer to the length of the data to be received
+  * @param  Receivedlen : Number of data really recieved
+  * @param  timeout     : Timeout for receiving the data
   * @retval None.
   */
 void IsmDrvClass::ES_WIFI_ReceiveData(uint8_t Socket, uint8_t *pdata,
@@ -1978,7 +1978,7 @@ void IsmDrvClass::ES_WIFI_ReceiveData(uint8_t Socket, uint8_t *pdata,
       if(ret == ES_WIFI_STATUS_OK)
       {
         // Timeout for the device must be shorter than our timeout otherwise
-        // the device may answer to late.
+        // the device may answer too late.
         ES_WIFI_SetTimeout(Timeout);
         sprintf(CmdData,"=%lu", Timeout-TIMEOUT_OFFSET);
         memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
@@ -2109,4 +2109,4 @@ uint8_t IsmDrvClass::getSocketState(uint8_t socket)
     return (uint8_t)SOCKET_BUSY;
 }
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/ 
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
