@@ -1181,18 +1181,21 @@ int IsmDrvClass::ES_WIFI_GetEncryptionType(uint8_t networkItem)
 /*
 * Return the RSSI of the associate Access point
 * @param : None
-* return: rssi
+* return: rssi (O for no Associated AP or error)
 */
 int32_t IsmDrvClass::ES_WIFI_GetRSSI()
 {
-  ES_WIFI_ListAccessPoints();
-  // List all access point in view
-  for (int j = 0; j < ESWifiApObj.nbr; j++) {
-    // Find our access point
-    if (strcmp((char *)ESWifiApObj.AP[j].SSID, (char *)EsWifiObj.NetSettings.SSID) == 0) {
-      // return RSSI
-      return ESWifiApObj.AP[j].RSSI;
-    }
+  ES_WIFI_Status_t ret;
+  char *ptr;
+
+  memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
+  strcpy((char *)EsWifiObj.CmdData, AT_NET_GET_RSSI);
+  strcat((char *)EsWifiObj.CmdData, SUFFIX_CMD);
+  ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
+
+  if (ret == ES_WIFI_STATUS_OK) {
+    ptr = (char *)EsWifiObj.CmdData + 2;
+    return ParseNumber(ptr, NULL);
   }
   return 0;
 }
