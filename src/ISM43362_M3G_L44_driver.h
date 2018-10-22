@@ -58,9 +58,10 @@
 
 /* Exported macro-------------------------------------------------------------*/
 
-#define AT_OK_STRING "\r\nOK\r\n> "
-#define AT_OK_STRING_LEN (sizeof(AT_OK_STRING) - 1)
-#define AT_ERROR_STRING "\r\nERROR"
+#define AT_OK_STRING                     "\r\nOK\r\n> "
+#define AT_OK_STRING_LEN                 (sizeof(AT_OK_STRING) - 1)
+#define AT_ERROR_STRING                  "\r\nERROR"
+#define AT_ERROR_STRING_LEN              40
 
 /* List of AT Command                                                        */
 /* -------------------------access point command---------------------------- */

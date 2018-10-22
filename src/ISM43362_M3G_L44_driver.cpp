@@ -47,6 +47,9 @@
 /* Includes ------------------------------------------------------------------*/
 #include "ISM43362_M3G_L44_driver.h"
 
+#if (ES_WIFI_PAYLOAD_SIZE + AT_ERROR_STRING_LEN) > ES_WIFI_DATA_SIZE
+#warning "ES_WIFI_PAYLOAD_SIZE is higer than ES_WIFI_DATA_SIZE this could cause overflow!"
+#endif
 
 #define CHARISHEXNUM(x)                 (((x) >= '0' && (x) <= '9') || \
                                          ((x) >= 'a' && (x) <= 'f') || \
