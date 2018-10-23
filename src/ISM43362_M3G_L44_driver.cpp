@@ -682,87 +682,6 @@ ES_WIFI_Status_t IsmDrvClass::AT_RequestSendData(uint8_t *cmd,
   return ES_WIFI_STATUS_IO_ERROR;
 }
 
-
-/**
-  * @brief  Parses Received short data length.
-  * @param  pdata: payload
-  * @param  Reqlen : requested Data length.
-  * @param  ReadData : pointer to received data length.
-  * @retval Operation Status.
-  */
-ES_WIFI_Status_t IsmDrvClass::ReceiveShortDataLen(char *pdata, uint16_t Reqlen,
-                                                  uint16_t *ReadData)
-{
-  uint16_t len;
-
-  if ((ReadData == NULL) || (pdata == NULL)) {
-    return ES_WIFI_STATUS_ERROR;
-  }
-
-  len = Drv->IO_Receive(EsWifiObj.CmdData, Reqlen + AT_OK_STRING_LEN, EsWifiObj.Timeout);
-
-  if (len >= AT_OK_STRING_LEN) {
-    EsWifiObj.CmdData[len] = '\0';
-    if (strstr((char *)EsWifiObj.CmdData + len - AT_OK_STRING_LEN, AT_OK_STRING)) {
-      *ReadData = len - AT_OK_STRING_LEN;
-      memcpy(pdata, EsWifiObj.CmdData, *ReadData);
-      return ES_WIFI_STATUS_OK;
-    } else {
-      /* Drain the error message out of the input buffer. */
-      len = Drv->IO_Receive(EsWifiObj.CmdData + len, sizeof(EsWifiObj.CmdData) - len - 1, EsWifiObj.Timeout);
-      EsWifiObj.CmdData[len] = '\0';
-    }
-  }
-  return ES_WIFI_STATUS_IO_ERROR;
-
-}
-
-/**
-  * @brief  Parses Received long data length.
-  * @param  pdata: payload
-  * @param  Reqlen : requested Data length.
-  * @param  ReadData : pointer to received data length.
-  * @retval Operation Status.
-  */
-ES_WIFI_Status_t IsmDrvClass::ReceiveLongDataLen(char *pdata, uint16_t Reqlen,
-                                                 uint16_t *ReadData)
-{
-  uint16_t len = 0;
-  uint16_t rlen = 0;
-  uint16_t dlen = 0;
-
-  if ((ReadData == NULL) || (pdata == NULL)) {
-    return ES_WIFI_STATUS_ERROR;
-  }
-
-  len = Drv->IO_Receive((uint8_t *)pdata, Reqlen, EsWifiObj.Timeout);
-
-  if (len >= AT_OK_STRING_LEN) {
-    PRINTDATA(pdata, len);
-    /* strstr cannot be used here because the scanned buffer is not null-terminated and cannot be padded (it is owned by the caller). */
-    if ((memcmp((char *)pdata + len - AT_OK_STRING_LEN, AT_OK_STRING, AT_OK_STRING_LEN) == 0)
-        || (memcmp((char *)pdata + len - 1 - AT_OK_STRING_LEN, AT_OK_STRING, AT_OK_STRING_LEN) == 0)) { /* -1 offset in case of 16b alignement stuffing on the physical link */
-      *ReadData = len - AT_OK_STRING_LEN;
-      return ES_WIFI_STATUS_OK;
-    } else {
-      /* Warn: The last (AT_OK_STRING_LEN - 1) bytes of the TCP payload will be scanned for AT_OK_STRING.
-       *       This may result into a false positive detection. */
-      memcpy(EsWifiObj.CmdData, pdata + len - AT_OK_STRING_LEN, AT_OK_STRING_LEN);
-      rlen = Drv->IO_Receive(EsWifiObj.CmdData + AT_OK_STRING_LEN, AT_OK_STRING_LEN, EsWifiObj.Timeout);
-      EsWifiObj.CmdData[AT_OK_STRING_LEN + rlen] = '\0';
-      if (strstr((char *) EsWifiObj.CmdData + rlen, AT_OK_STRING)) {
-        *ReadData = len + rlen - AT_OK_STRING_LEN;
-        return ES_WIFI_STATUS_OK;
-      } else {
-        /* Drain the error message out of the input buffer. */
-        dlen = Drv->IO_Receive(EsWifiObj.CmdData + AT_OK_STRING_LEN + rlen, sizeof(EsWifiObj.CmdData) - AT_OK_STRING_LEN - rlen - 1, EsWifiObj.Timeout);
-        EsWifiObj.CmdData[AT_OK_STRING_LEN + rlen + dlen] = '\0';
-      }
-    }
-  }
-  return ES_WIFI_STATUS_IO_ERROR;
-}
-
 /**
   * @brief  Parses Received data.
   * @param  cmd:command formatted string
@@ -774,19 +693,40 @@ ES_WIFI_Status_t IsmDrvClass::ReceiveLongDataLen(char *pdata, uint16_t Reqlen,
 ES_WIFI_Status_t IsmDrvClass::AT_RequestReceiveData(uint8_t *cmd,  char *pdata,
                                                     uint16_t Reqlen, uint16_t *ReadData)
 {
+  uint16_t len;
+  uint8_t *p = EsWifiObj.CmdData;
+  char *match = NULL;
+
   if ((cmd == NULL) || (pdata == NULL) || (ReadData == NULL)) {
     return ES_WIFI_STATUS_ERROR;
   }
 
   PRINTCMD(cmd);
+
   if (Drv->IO_Send(cmd, strlen((char *)cmd), EsWifiObj.Timeout) > 0) {
-    if (Drv->IO_Receive(EsWifiObj.CmdData, 2, EsWifiObj.Timeout) == 2) { /* Read Prompt */
-      PRINTDATA(EsWifiObj.CmdData, 2);
-      if (Reqlen <= AT_OK_STRING_LEN) {
-        return ReceiveShortDataLen(pdata, Reqlen, ReadData);
+    len = Drv->IO_Receive(p, ES_WIFI_DATA_SIZE, EsWifiObj.Timeout);
+    if ((len >= 2) && ((p[0] == '\r') || (p[1] == '\n'))) {
+      PRINTDATA(p, 2);
+      len -= 2;
+      p += 2;
+      while (len && (p[len - 1] == 0x15)) {
+        len--;
       }
-      if (Reqlen >  AT_OK_STRING_LEN) {
-        return ReceiveLongDataLen(pdata, Reqlen, ReadData);
+      if (len >= AT_OK_STRING_LEN) {
+        p[len] = '\0';
+        if (strstr((char *) p + len - AT_OK_STRING_LEN, AT_OK_STRING)) {
+          *ReadData = len - AT_OK_STRING_LEN;
+          if (*ReadData > Reqlen) {
+            *ReadData = Reqlen;
+          }
+          memcpy(pdata, p, *ReadData);
+          return ES_WIFI_STATUS_OK;
+        } else {
+          match = strstr((char *)p, "-1\r\n");
+          if (match && (match == (char *)p)) {
+            return ES_WIFI_STATUS_ERROR;
+          }
+        }
       }
     }
   }
@@ -1805,7 +1745,7 @@ void IsmDrvClass::ES_WIFI_ReceiveData(uint8_t Socket, uint8_t *pdata,
           sprintf((char *)EsWifiObj.CmdData, AT_READ_DATA);
           memset(pdata, '\0', Reqlen);
           ret = AT_RequestReceiveData(EsWifiObj.CmdData, (char *)pdata, Reqlen, Receivedlen);
-          if (strstr((char *)pdata, "-1\r\n")) {
+          if (ret != ES_WIFI_STATUS_OK) {
             sockState[Socket] = SOCKET_FREE;
             *Receivedlen = 0;
           }
