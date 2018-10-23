@@ -627,9 +627,6 @@ ES_WIFI_Status_t IsmDrvClass::AT_ExecuteCommand(uint8_t *cmd, uint8_t *pdata)
   PRINTCMD(cmd);
   ret = Drv->IO_Send(cmd, strlen((char *)cmd), EsWifiObj.Timeout);
   if (ret > 0) {
-    if (cmd == pdata) {
-      memset(cmd, '\0', strlen((char *)cmd));
-    }
 
     int16_t n = Drv->IO_Receive(pdata, ES_WIFI_DATA_SIZE, EsWifiObj.Timeout);
     if ((n > 0) && (n < ES_WIFI_DATA_SIZE)) {
@@ -662,9 +659,6 @@ ES_WIFI_Status_t IsmDrvClass::AT_RequestSendData(uint8_t *cmd,
   PRINTCMD(cmd);
   if (Drv->IO_Send(cmd, len, EsWifiObj.Timeout) > 0) {
     PRINTDATA(cmd, len);
-    if (cmd == pdata) {
-      memset(cmd, '\0', len);
-    }
 
     int16_t n = Drv->IO_Receive(pdata, ES_WIFI_DATA_SIZE, EsWifiObj.Timeout);
     if ((n > 0) && (n < ES_WIFI_DATA_SIZE)) {
@@ -749,7 +743,6 @@ ES_WIFI_Status_t IsmDrvClass::ES_WIFI_Init()
   EsWifiObj.Timeout = ES_WIFI_TIMEOUT;
 
   if (Drv->IO_Init() == 0) {
-    memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
     strcpy((char *)EsWifiObj.CmdData, AT_API_SHOW_SETTINGS);
     strcat((char *)EsWifiObj.CmdData, SUFFIX_CMD);
     ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -842,7 +835,6 @@ void IsmDrvClass::ES_WIFI_ListAccessPoints()
 {
   ES_WIFI_Status_t ret;
 
-  memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
   strcpy((char *)EsWifiObj.CmdData, AT_SCAN);
   strcat((char *)EsWifiObj.CmdData, SUFFIX_CMD);
   ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -877,19 +869,16 @@ ES_WIFI_Status_t IsmDrvClass::ES_WIFI_Connect(const char *SSID,
     return ES_WIFI_STATUS_ERROR;
   }
 
-  memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
   sprintf((char *)EsWifiObj.CmdData, "%s=%s%s",
           AT_NET_SET_SSID, SSID, SUFFIX_CMD);
   ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
   if (ret == ES_WIFI_STATUS_OK) {
-    memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
     sprintf((char *)EsWifiObj.CmdData, "%s=%s%s",
             AT_NET_SET_PASSPHRASE, Password, SUFFIX_CMD);
     ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
 
     if (ret == ES_WIFI_STATUS_OK) {
       EsWifiObj.Security = SecType;
-      memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
       sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
               AT_NET_SET_SECURITY_TYPE, SecType, SUFFIX_CMD);
       ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -899,7 +888,6 @@ ES_WIFI_Status_t IsmDrvClass::ES_WIFI_Connect(const char *SSID,
         //Allows to wait the response in case of reconnection.
         // If less, then the response is missed and the reconnection is longer.
         ES_WIFI_SetTimeout(10000);
-        memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
         strcpy((char *)EsWifiObj.CmdData, AT_NET_JOIN);
         strcat((char *)EsWifiObj.CmdData, SUFFIX_CMD);
         ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -920,7 +908,6 @@ ES_WIFI_Status_t IsmDrvClass::ES_WIFI_Connect(const char *SSID,
   */
 void IsmDrvClass::ES_WIFI_Disconnect()
 {
-  memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
   strcpy((char *)EsWifiObj.CmdData, AT_NET_DISCONNECT);
   strcat((char *)EsWifiObj.CmdData, SUFFIX_CMD);
   AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -935,7 +922,6 @@ ES_WIFI_Status_t IsmDrvClass::ES_WIFI_GetNetworkSettings()
 {
   ES_WIFI_Status_t ret;
 
-  memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
   strcpy((char *)EsWifiObj.CmdData, AT_NET_SHOW_SETTINGS);
   strcat((char *)EsWifiObj.CmdData, SUFFIX_CMD);
   ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -955,7 +941,6 @@ ES_WIFI_Status_t IsmDrvClass::ES_WIFI_GetTrSettings(uint8_t index)
 {
   ES_WIFI_Status_t ret;
 
-  memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
   strcpy((char *)EsWifiObj.CmdData, AT_TR_SHOW_SETTNGS);
   strcat((char *)EsWifiObj.CmdData, SUFFIX_CMD);
   ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -981,7 +966,6 @@ uint8_t *IsmDrvClass::ES_WIFI_GetMACAddress(uint8_t *mac)
     return NULL;
   }
 
-  memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
   strcpy((char *)EsWifiObj.CmdData, AT_SYS_GET_MAC_ADDR);
   strcat((char *)EsWifiObj.CmdData, SUFFIX_CMD);
   ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -1124,7 +1108,6 @@ int32_t IsmDrvClass::ES_WIFI_GetRSSI()
   ES_WIFI_Status_t ret;
   char *ptr;
 
-  memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
   strcpy((char *)EsWifiObj.CmdData, AT_NET_GET_RSSI);
   strcat((char *)EsWifiObj.CmdData, SUFFIX_CMD);
   ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -1168,14 +1151,12 @@ void IsmDrvClass::ES_WIFI_SetMACAddress(uint8_t *mac)
     return;
   }
 
-  memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
   sprintf((char *)EsWifiObj.CmdData, "%s=%X:%X:%X:%X:%X:%X%s",
           AT_SYS_SET_MAC_ADDR, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5],
           SUFFIX_CMD);
 
   ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
   if (ret == ES_WIFI_STATUS_OK) {
-    memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
     strcpy((char *)EsWifiObj.CmdData, AT_SYS_SAVE_SETTINGS);
     strcat((char *)EsWifiObj.CmdData, SUFFIX_CMD);
     ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -1189,7 +1170,6 @@ void IsmDrvClass::ES_WIFI_SetMACAddress(uint8_t *mac)
   */
 void IsmDrvClass::ES_WIFI_ResetToFactoryDefault()
 {
-  memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
   strcpy((char *)EsWifiObj.CmdData, AT_SYS_SET_RESET_FACTORY);
   strcat((char *)EsWifiObj.CmdData, SUFFIX_CMD);
   AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -1202,7 +1182,6 @@ void IsmDrvClass::ES_WIFI_ResetToFactoryDefault()
   */
 void IsmDrvClass::ES_WIFI_ResetModule()
 {
-  memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
   strcpy((char *)EsWifiObj.CmdData, AT_SYS_RESET_MODULE);
   strcat((char *)EsWifiObj.CmdData, SUFFIX_CMD);
   AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -1221,13 +1200,11 @@ void IsmDrvClass::ES_WIFI_SetProductName(uint8_t *ProductName)
     return;
   }
 
-  memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
   sprintf((char *)EsWifiObj.CmdData, "%s=%s%s",
           AT_SYS_SET_PRODUCT_NAME, ProductName, SUFFIX_CMD);
 
   ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
   if (ret == ES_WIFI_STATUS_OK) {
-    memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
     strcpy((char *)EsWifiObj.CmdData, AT_SYS_SAVE_SETTINGS);
     strcat((char *)EsWifiObj.CmdData, SUFFIX_CMD);
     ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -1266,7 +1243,6 @@ void IsmDrvClass::ES_WIFI_Ping(uint8_t *address, uint16_t count, uint16_t interv
     return;
   }
 
-  memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
   sprintf((char *)EsWifiObj.CmdData, "%s=%d.%d.%d.%d%s",
           AT_PING_SET_TARGET_ADDR, address[0], address[1],
           address[2], address[3], SUFFIX_CMD);
@@ -1274,19 +1250,16 @@ void IsmDrvClass::ES_WIFI_Ping(uint8_t *address, uint16_t count, uint16_t interv
   ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
 
   if (ret == ES_WIFI_STATUS_OK) {
-    memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
     sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
             AT_PING_SET_REPEAT_COUNT, count, SUFFIX_CMD);
     ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
 
     if (ret == ES_WIFI_STATUS_OK) {
-      memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
       sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
               AT_PING_SET_DELAY_MS, interval_ms, SUFFIX_CMD);
       ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
 
       if (ret == ES_WIFI_STATUS_OK) {
-        memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
         strcpy((char *)EsWifiObj.CmdData, AT_PING_TARGET_ADDR);
         strcat((char *)EsWifiObj.CmdData, SUFFIX_CMD);
         ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -1311,7 +1284,6 @@ void IsmDrvClass::ES_WIFI_DNS_LookUp(const char *url, IPAddress *ipaddress)
     return;
   }
 
-  memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
   sprintf((char *)EsWifiObj.CmdData, "%s=%s%s",
           AT_DNS_LOOKUP, url, SUFFIX_CMD);
   ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -1335,25 +1307,21 @@ void IsmDrvClass::ES_WIFI_StartClientConnection(uint8_t index)
 
   currentSock = index;
   sockState[index] = SOCKET_BUSY;
-  memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
   sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
           AT_TR_SET_SOCKET, ESWifiConnTab[index].Number, SUFFIX_CMD);
   ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
 
   if (ret == ES_WIFI_STATUS_OK) {
-    memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
     sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
             AT_TR_SET_PROTOCOL, ESWifiConnTab[index].Type, SUFFIX_CMD);
     ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
     if (ret == ES_WIFI_STATUS_OK) {
       if ((ESWifiConnTab[index].Type == ES_WIFI_UDP_CONNECTION) && (ESWifiConnTab[index].LocalPort > 0)) {
-        memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
         sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
                 AT_TR_SET_LOCAL_PORT_NUMBER, ESWifiConnTab[index].LocalPort,
                 SUFFIX_CMD);
         ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
       }
-      memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
       sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
               AT_TR_SET_REMOTE_PORT_NUMBER, ESWifiConnTab[index].RemotePort,
               SUFFIX_CMD);
@@ -1361,7 +1329,6 @@ void IsmDrvClass::ES_WIFI_StartClientConnection(uint8_t index)
       ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
 
       if (ret == ES_WIFI_STATUS_OK) {
-        memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
         sprintf((char *)EsWifiObj.CmdData, "%s=%d.%d.%d.%d%s",
                 AT_TR_SET_REMOTE_HOST_IP_ADDR,
                 ESWifiConnTab[index].RemoteIP[0], ESWifiConnTab[index].RemoteIP[1],
@@ -1370,7 +1337,6 @@ void IsmDrvClass::ES_WIFI_StartClientConnection(uint8_t index)
         ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
 
         if (ret == ES_WIFI_STATUS_OK) {
-          memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
           sprintf((char *)EsWifiObj.CmdData, "%s=1%s",
                   AT_TR_CLIENT, SUFFIX_CMD);
           ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -1391,13 +1357,11 @@ void IsmDrvClass::ES_WIFI_StopClientConnection(uint8_t index)
 
   currentSock = index;
   sockState[currentSock] = SOCKET_FREE;
-  memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
   sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
           AT_TR_SET_SOCKET, index, SUFFIX_CMD);
   ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
 
   if (ret == ES_WIFI_STATUS_OK) {
-    memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
     sprintf((char *)EsWifiObj.CmdData, "%s=0%s",
             AT_TR_CLIENT, SUFFIX_CMD);
     ret =  AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -1419,29 +1383,24 @@ void IsmDrvClass::ES_WIFI_StartServerSingleConn(uint8_t index, comm_mode mode)
     return;
   }
 
-  memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
   sprintf((char *)EsWifiObj.CmdData, "%s=1,3000%s",
           AT_TR_TCP_KEEP_ALIVE, SUFFIX_CMD);
   ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
   if (ret == ES_WIFI_STATUS_OK) {
     currentSock = index;
     sockState[currentSock] = SOCKET_BUSY;
-    memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
     sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
             AT_TR_SET_SOCKET, ESWifiConnTab[index].Number, SUFFIX_CMD);
     ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
     if (ret == ES_WIFI_STATUS_OK) {
-      memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
       sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
               AT_TR_SET_PROTOCOL, ESWifiConnTab[index].Type, SUFFIX_CMD);
       ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
       if (ret == ES_WIFI_STATUS_OK) {
-        memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
         sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
                 AT_TR_SET_LOCAL_PORT_NUMBER, ESWifiConnTab[index].LocalPort, SUFFIX_CMD);
         ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
         if (ret == ES_WIFI_STATUS_OK) {
-          memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
           sprintf((char *)EsWifiObj.CmdData, "%s=1%s",
                   AT_TR_SERVER, SUFFIX_CMD);
           ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -1460,7 +1419,6 @@ void IsmDrvClass::ES_WIFI_StartServerSingleConn(uint8_t index, comm_mode mode)
               }
             } else if (mode == COMM_SPI) {
               do {
-                memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
                 strcpy((char *)EsWifiObj.CmdData, AT_MESSAGE_READ);
                 strcat((char *)EsWifiObj.CmdData, SUFFIX_CMD);
                 ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -1503,12 +1461,10 @@ void IsmDrvClass::ES_WIFI_StopServerSingleConn(uint8_t index)
 
   currentSock = index;
   sockState[currentSock] = SOCKET_FREE;
-  memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
   sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
           AT_TR_SET_SOCKET, index, SUFFIX_CMD);
   ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
   if (ret == ES_WIFI_STATUS_OK) {
-    memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
     sprintf((char *)EsWifiObj.CmdData, "%s=0%s",
             AT_TR_SERVER, SUFFIX_CMD);
     AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -1527,36 +1483,30 @@ void IsmDrvClass::ES_WIFI_StartServerMultiConn(uint8_t index, comm_mode mode)
   ES_WIFI_Status_t ret = ES_WIFI_STATUS_ERROR;
   char *ptr;
 
-  memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
   sprintf((char *)EsWifiObj.CmdData, "%s=1,3000%s",
           AT_TR_TCP_KEEP_ALIVE, SUFFIX_CMD);
   ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
   if (ret == ES_WIFI_STATUS_OK) {
     currentSock = index;
     sockState[currentSock] = SOCKET_BUSY;
-    memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
     sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
             AT_TR_SET_SOCKET, ESWifiConnTab[index].Number, SUFFIX_CMD);
     ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
     if (ret == ES_WIFI_STATUS_OK) {
-      memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
       sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
               AT_TR_SET_PROTOCOL, ESWifiConnTab[index].Type, SUFFIX_CMD);
       ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
       if (ret == ES_WIFI_STATUS_OK) {
-        memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
         sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
                 AT_TR_SET_LOCAL_PORT_NUMBER, ESWifiConnTab[index].LocalPort,
                 SUFFIX_CMD);
         ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
         if (ret == ES_WIFI_STATUS_OK) {
-          memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
           sprintf((char *)EsWifiObj.CmdData, "%s=6%s",
                   AT_TR_SET_LISTEN_BACKLOGS, SUFFIX_CMD);
           ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
 
           if (ret == ES_WIFI_STATUS_OK) {
-            memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
             strcat((char *)EsWifiObj.CmdData, SUFFIX_CMD);
             sprintf((char *)EsWifiObj.CmdData, "%s=1%s",
                     AT_TR_SERVER, SUFFIX_CMD);
@@ -1576,7 +1526,6 @@ void IsmDrvClass::ES_WIFI_StartServerMultiConn(uint8_t index, comm_mode mode)
                 }
               } else if (mode == COMM_SPI) {
                 do {
-                  memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
                   strcpy((char *)EsWifiObj.CmdData, AT_MESSAGE_READ);
                   strcat((char *)EsWifiObj.CmdData, SUFFIX_CMD);
                   ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -1603,7 +1552,6 @@ void IsmDrvClass::ES_WIFI_StartServerMultiConn(uint8_t index, comm_mode mode)
               }
             }
             if (ret == ES_WIFI_STATUS_OK) {
-              memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
               sprintf((char *)EsWifiObj.CmdData, "%s=1%s",
                       AT_TR_REQUEST_TCP_LOOP, SUFFIX_CMD);
               ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -1626,14 +1574,12 @@ void IsmDrvClass::ES_WIFI_StopServerMultiConn()
   ES_WIFI_Status_t ret = ES_WIFI_STATUS_ERROR;
 
   /* close the socket handle for the current request. */
-  memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
   sprintf((char *)EsWifiObj.CmdData, "%s=2%s",
           AT_TR_REQUEST_TCP_LOOP, SUFFIX_CMD);
   ret =  AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
 
   if (ret == ES_WIFI_STATUS_OK) {
     /*Get the next request out of the queue */
-    memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
     sprintf((char *)EsWifiObj.CmdData, "%s=3%s",
             AT_TR_REQUEST_TCP_LOOP, SUFFIX_CMD);
     ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -1669,7 +1615,6 @@ void IsmDrvClass::ES_WIFI_SendResp(uint8_t Socket, uint8_t *pdata,
 
   if (Reqlen <= ES_WIFI_PAYLOAD_SIZE) {
     currentSock = Socket;
-    memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
     sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
             AT_TR_SET_SOCKET, Socket, SUFFIX_CMD);
     ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -1677,17 +1622,14 @@ void IsmDrvClass::ES_WIFI_SendResp(uint8_t Socket, uint8_t *pdata,
       ES_WIFI_SetTimeout(Timeout);
       // Timeout for the device must be shorter than our timeout otherwise
       // the device may answer to late.
-      memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
       sprintf((char *)EsWifiObj.CmdData, "%s=%lu%s",
               AT_WRITE_SET_TIMEOUT, Timeout - TIMEOUT_OFFSET, SUFFIX_CMD);
       ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
       if (ret == ES_WIFI_STATUS_OK) {
-        memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
         sprintf((char *)EsWifiObj.CmdData, "%s=%u%s",
                 AT_WRITE_SET_PACKET_SIZE, Reqlen, SUFFIX_CMD);
         ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
         if (ret == ES_WIFI_STATUS_OK) {
-          memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
           strcpy((char *)EsWifiObj.CmdData, AT_WRITE_DATA);
           strcat((char *)EsWifiObj.CmdData, SUFFIX_CMD);
           memcpy((char *)EsWifiObj.CmdData + 3, pdata, Reqlen);
@@ -1723,13 +1665,11 @@ void IsmDrvClass::ES_WIFI_ReceiveData(uint8_t Socket, uint8_t *pdata,
 
   if (Reqlen <= ES_WIFI_PAYLOAD_SIZE) {
     currentSock = Socket;
-    memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
     sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
             AT_TR_SET_SOCKET, Socket, SUFFIX_CMD);
     ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
 
     if (ret == ES_WIFI_STATUS_OK) {
-      memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
       sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
               AT_READ_SET_PACKET_SIZE, Reqlen, SUFFIX_CMD);
       ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
@@ -1737,13 +1677,11 @@ void IsmDrvClass::ES_WIFI_ReceiveData(uint8_t Socket, uint8_t *pdata,
         // Timeout for the device must be shorter than our timeout otherwise
         // the device may answer too late.
         ES_WIFI_SetTimeout(Timeout);
-        memset(EsWifiObj.CmdData, '\0', ES_WIFI_DATA_SIZE);
         sprintf((char *)EsWifiObj.CmdData, "%s=%lu%s",
                 AT_READ_SET_TIMEOUT_MS, Timeout - TIMEOUT_OFFSET, SUFFIX_CMD);
         ret = AT_ExecuteCommand(EsWifiObj.CmdData, EsWifiObj.CmdData);
         if (ret == ES_WIFI_STATUS_OK) {
           sprintf((char *)EsWifiObj.CmdData, AT_READ_DATA);
-          memset(pdata, '\0', Reqlen);
           ret = AT_RequestReceiveData(EsWifiObj.CmdData, (char *)pdata, Reqlen, Receivedlen);
           if (ret != ES_WIFI_STATUS_OK) {
             sockState[Socket] = SOCKET_FREE;
