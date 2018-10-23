@@ -45,11 +45,11 @@ WiFiUDP::WiFiUDP() : _sock(NO_SOCKET_AVAIL) {}
  * @param  port : port to listen
  * @retval Returns 1 if successful, 0 if there are no sockets available to use
  */
-uint8_t WiFiUDP::begin(uint16_t port) {
+uint8_t WiFiUDP::begin(uint16_t port)
+{
 
   int8_t sock = DrvWiFi->getFreeSocket(); // get next free socket
-  if (sock != -1)
-  {
+  if (sock != -1) {
     // Set connection parameter and start server
     DrvWiFi->ES_WIFI_SetConnectionParam(sock, ES_WIFI_UDP_CONNECTION, port);
     DrvWiFi->ES_WIFI_StartServerSingleConn(sock, COMM_SPI);
@@ -67,8 +67,7 @@ uint8_t WiFiUDP::begin(uint16_t port) {
  */
 void WiFiUDP::stop()
 {
-  if (_sock != NO_SOCKET_AVAIL)
-  {
+  if (_sock != NO_SOCKET_AVAIL) {
     DrvWiFi->ES_WIFI_StopServerSingleConn(_sock);
     _sock = NO_SOCKET_AVAIL;
   }
@@ -83,16 +82,13 @@ void WiFiUDP::stop()
 int WiFiUDP::beginPacket(IPAddress ip, uint16_t port)
 {
   int8_t sock;
-  if (_sock == NO_SOCKET_AVAIL)
-  {
+  if (_sock == NO_SOCKET_AVAIL) {
     sock = DrvWiFi->getFreeSocket(); // get next free socket
-    if(sock != -1)
-    {
+    if (sock != -1) {
       _sock = sock;
     }
   }
-  if (_sock != NO_SOCKET_AVAIL)
-  {
+  if (_sock != NO_SOCKET_AVAIL) {
     // set connection parameter and start client connection
     DrvWiFi->ES_WIFI_SetConnectionParam(_sock, ES_WIFI_UDP_CONNECTION, port, ip);
     DrvWiFi->ES_WIFI_StartClientConnection(_sock);
@@ -139,7 +135,7 @@ int WiFiUDP::endPacket()
 size_t WiFiUDP::write(const uint8_t *buffer, size_t size)
 {
   uint16_t SentLen = 0; // number of data really send
-  uint8_t *temp = (uint8_t*)buffer;
+  uint8_t *temp = (uint8_t *)buffer;
 
   DrvWiFi->ES_WIFI_SendResp(_sock, temp, size, &SentLen, WIFI_TIMEOUT);
 
@@ -162,7 +158,8 @@ size_t WiFiUDP::write(uint8_t byte)
  * @retval number of bytes available in the current packet
  * @Note Function not supported, always return 0
  */
-int WiFiUDP::available() {
+int WiFiUDP::available()
+{
   /***************************************************************************/
   /*                               NOT SUPPORTED                             */
   /* This functionality doesn't exist in the current device.                 */
@@ -200,13 +197,12 @@ int WiFiUDP::read()
  * @param  len : length of data to read
  * @retval Returns the number of bytes read, or 0 if none are available
  */
-int WiFiUDP::read(unsigned char* buffer, size_t len)
+int WiFiUDP::read(unsigned char *buffer, size_t len)
 {
   uint16_t RecLen = 0; // Number of data received
 
   DrvWiFi->ES_WIFI_ReceiveData(_sock, buffer, len, &RecLen, WIFI_TIMEOUT);
-  if (RecLen < len)
-  {
+  if (RecLen < len) {
     buffer[RecLen] = '\0'; // string end
   }
   return RecLen;

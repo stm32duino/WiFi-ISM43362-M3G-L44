@@ -39,29 +39,32 @@
 #define UDP_TX_PACKET_MAX_SIZE 24
 
 class WiFiUDP : public UDP {
-private:
-  uint8_t _sock;  // socket ID
-  uint16_t _port; // local port to listen on
+  private:
+    uint8_t _sock;  // socket ID
+    uint16_t _port; // local port to listen on
 
-public:
-  WiFiUDP();
-  virtual uint8_t begin(uint16_t);
-  virtual void stop();
-  virtual int beginPacket(IPAddress ip, uint16_t port);
-  virtual int beginPacket(const char *host, uint16_t port);
-  virtual int endPacket();
-  virtual size_t write(uint8_t);
-  virtual size_t write(const uint8_t *buffer, size_t size);
-  using Print::write;
-  virtual int parsePacket();
-  virtual int available();
-  virtual int read();
-  virtual int read(unsigned char* buffer, size_t len);
-  virtual int read(char* buffer, size_t len) { return read((unsigned char*)buffer, len); };
-  virtual int peek();
-  virtual void flush();
-  virtual IPAddress remoteIP();
-  virtual uint16_t remotePort();
+  public:
+    WiFiUDP();
+    virtual uint8_t begin(uint16_t);
+    virtual void stop();
+    virtual int beginPacket(IPAddress ip, uint16_t port);
+    virtual int beginPacket(const char *host, uint16_t port);
+    virtual int endPacket();
+    virtual size_t write(uint8_t);
+    virtual size_t write(const uint8_t *buffer, size_t size);
+    using Print::write;
+    virtual int parsePacket();
+    virtual int available();
+    virtual int read();
+    virtual int read(unsigned char *buffer, size_t len);
+    virtual int read(char *buffer, size_t len)
+    {
+      return read((unsigned char *)buffer, len);
+    };
+    virtual int peek();
+    virtual void flush();
+    virtual IPAddress remoteIP();
+    virtual uint16_t remotePort();
 };
 
 #endif  //WIFIUDP_H

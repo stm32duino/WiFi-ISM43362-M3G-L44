@@ -40,15 +40,12 @@
 * @param  None
 * @retval None
 */
-void WiFiClass::init() {
-  if (wifi_status == WL_NO_SHIELD)
-  {
-    if (DrvWiFi->ES_WIFI_Init() != ES_WIFI_STATUS_OK)
-    {
+void WiFiClass::init()
+{
+  if (wifi_status == WL_NO_SHIELD) {
+    if (DrvWiFi->ES_WIFI_Init() != ES_WIFI_STATUS_OK) {
       wifi_status = WL_NO_SHIELD;
-    }
-    else
-    {
+    } else {
       wifi_status = WL_IDLE_STATUS;
     }
   }
@@ -101,29 +98,27 @@ WiFiClass::WiFiClass(uint8_t tx, uint8_t rx, uint8_t reset, uint8_t wakeup)
 * @param  None
 * @retval Device status.
 */
-uint8_t WiFiClass::status() {
+uint8_t WiFiClass::status()
+{
   WiFiClass::init();
   return wifi_status;
-  }
+}
 
 /**
 * @brief  Start WiFi connection for OPEN networks
 * @param  ssid: Pointer to the SSID string
 * @retval WL_CONNECTED if success
 */
-int WiFiClass::begin(char* ssid)
+int WiFiClass::begin(char *ssid)
 {
   char dummy_password[] = "DEADBEEFDEADFOODDEADBEEFED";   // Password not use because open connection
   ES_WIFI_SecurityType_t sectype = ES_WIFI_SEC_OPEN;
 
   WiFiClass::init();
-  if (DrvWiFi->ES_WIFI_Connect(ssid, dummy_password, sectype) == ES_WIFI_STATUS_OK)
-  {
+  if (DrvWiFi->ES_WIFI_Connect(ssid, dummy_password, sectype) == ES_WIFI_STATUS_OK) {
     wifi_status = WL_CONNECTED;
     return WL_CONNECTED;
-  }
-  else
-  {
+  } else {
     // Close connection
     DrvWiFi->ES_WIFI_Disconnect();
   }
@@ -140,20 +135,17 @@ int WiFiClass::begin(char* ssid)
 * @param  key: Key input buffer.
 * @retval WL_CONNECTED if success
 */
-int WiFiClass::begin(char* ssid, uint8_t key_idx, const char* key)
+int WiFiClass::begin(char *ssid, uint8_t key_idx, const char *key)
 {
   ES_WIFI_SecurityType_t sectype = ES_WIFI_SEC_WEP;
 
   UNUSED(key_idx); // Parameter unused, Arduino compatibility
   WiFiClass::init();
 
-  if (DrvWiFi->ES_WIFI_Connect(ssid, key, sectype) == ES_WIFI_STATUS_OK)
-  {
+  if (DrvWiFi->ES_WIFI_Connect(ssid, key, sectype) == ES_WIFI_STATUS_OK) {
     wifi_status = WL_CONNECTED;
     return WL_CONNECTED;
-  }
-  else
-  {
+  } else {
     // Close connection
     DrvWiFi->ES_WIFI_Disconnect();
   }
@@ -168,16 +160,13 @@ int WiFiClass::begin(char* ssid, uint8_t key_idx, const char* key)
 *         must be between ASCII 32-126 (decimal).
 * @param  sectype: Security type (default: ES_WIFI_SEC_WPA_WPA2)
 */
-int WiFiClass::begin(char* ssid, const char *passphrase, ES_WIFI_SecurityType_t sectype)
+int WiFiClass::begin(char *ssid, const char *passphrase, ES_WIFI_SecurityType_t sectype)
 {
   WiFiClass::init();
-  if (DrvWiFi->ES_WIFI_Connect(ssid, passphrase, sectype) == ES_WIFI_STATUS_OK)
-  {
+  if (DrvWiFi->ES_WIFI_Connect(ssid, passphrase, sectype) == ES_WIFI_STATUS_OK) {
     wifi_status = WL_CONNECTED;
     return WL_CONNECTED;
-  }
-  else
-  {
+  } else {
     // Close connection
     DrvWiFi->ES_WIFI_Disconnect();
   }
@@ -203,7 +192,8 @@ void WiFiClass::disconnect(void)
 * @param  None
 * @retval the firmware version
 */
-char* WiFiClass::firmwareVersion() {
+char *WiFiClass::firmwareVersion()
+{
   return DrvWiFi->ES_WIFI_GetFWRevID();
 }
 
@@ -212,16 +202,17 @@ char* WiFiClass::firmwareVersion() {
 * @param  None
 * @retval Ip address value
 */
- IPAddress WiFiClass::localIP() {
+IPAddress WiFiClass::localIP()
+{
   return DrvWiFi->ES_WIFI_GetIPAddress();
- }
+}
 
 /*
 * @brief  Get the interface MAC address
 * @param  mac : pointer where to write MAC address
 * @retval the MAC address
 */
-uint8_t* WiFiClass::macAddress(uint8_t* mac)
+uint8_t *WiFiClass::macAddress(uint8_t *mac)
 {
   DrvWiFi->ES_WIFI_GetMACAddress(mac);
   return mac;
@@ -232,7 +223,8 @@ uint8_t* WiFiClass::macAddress(uint8_t* mac)
 * @param  None
 * @retval subnet mask address value
 */
- IPAddress WiFiClass::subnetMask() {
+IPAddress WiFiClass::subnetMask()
+{
   return DrvWiFi->ES_WIFI_GetSubnetMask();
 }
 
@@ -241,7 +233,8 @@ uint8_t* WiFiClass::macAddress(uint8_t* mac)
 * @param  None
 * @retval gateway IP address value
 */
- IPAddress WiFiClass::gatewayIP() {
+IPAddress WiFiClass::gatewayIP()
+{
   return DrvWiFi->ES_WIFI_GetGatewayIP();
 }
 
@@ -250,8 +243,9 @@ uint8_t* WiFiClass::macAddress(uint8_t* mac)
 * @param  None
 * @retval ssid string
 */
- char* WiFiClass::SSID() {
-  return (char*)DrvWiFi->ES_WIFI_GetSSID();
+char *WiFiClass::SSID()
+{
+  return (char *)DrvWiFi->ES_WIFI_GetSSID();
 }
 
 /*
@@ -259,9 +253,10 @@ uint8_t* WiFiClass::macAddress(uint8_t* mac)
 * @param  networkItem: specify from which network item want to get the information
 * @retval ssid string of the specified item on the networks scanned list
 */
-char* WiFiClass::SSID(uint8_t networkItem) {
+char *WiFiClass::SSID(uint8_t networkItem)
+{
 
-  return (char*)DrvWiFi->ES_WIFI_GetSSID(networkItem);
+  return (char *)DrvWiFi->ES_WIFI_GetSSID(networkItem);
 }
 
 /*
@@ -270,7 +265,7 @@ char* WiFiClass::SSID(uint8_t networkItem) {
 * @param  pointer where to write the bbsid
 * @retval the bbsid
 */
-uint8_t* WiFiClass::BSSID(uint8_t* bssid)
+uint8_t *WiFiClass::BSSID(uint8_t *bssid)
 {
   DrvWiFi->ES_WIFI_GetBSSID(bssid);
   return bssid;
@@ -322,7 +317,7 @@ uint8_t WiFiClass::encryptionType(uint8_t networkItem)
 * @param  mac : mac Address to set
 * @retval None
 */
-void WiFiClass::setMac(uint8_t* macAddress)
+void WiFiClass::setMac(uint8_t *macAddress)
 {
   DrvWiFi->ES_WIFI_SetMACAddress(macAddress);
 }
@@ -335,12 +330,9 @@ void WiFiClass::setMac(uint8_t* macAddress)
 int8_t WiFiClass::scanNetworks()
 {
   DrvWiFi->ES_WIFI_ListAccessPoints();
-  if (DrvWiFi->ES_WIFI_GetApNbr() == 0)
-  {
+  if (DrvWiFi->ES_WIFI_GetApNbr() == 0) {
     wifi_status = WL_NO_SSID_AVAIL;
-  }
-  else
-  {
+  } else {
     wifi_status = WL_SCAN_COMPLETED;
   }
   return DrvWiFi->ES_WIFI_GetApNbr();
@@ -362,7 +354,7 @@ uint8_t WiFiClass::getSocket()
 * @param  aResult: IPAddress structure to store the returned IP address
 * @retval 1 if aIPAddrString was successfully converted to an IP address
 */
-int WiFiClass::hostByName(const char* aHostname, IPAddress aResult)
+int WiFiClass::hostByName(const char *aHostname, IPAddress aResult)
 {
   DrvWiFi->ES_WIFI_DNS_LookUp(aHostname, &aResult);
   return 1;

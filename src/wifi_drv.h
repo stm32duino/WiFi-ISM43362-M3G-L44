@@ -53,12 +53,12 @@ typedef enum {
   ES_WIFI_STATUS_ERROR          = 2,
   ES_WIFI_STATUS_TIMEOUT        = 3,
   ES_WIFI_STATUS_IO_ERROR       = 4,
-}ES_WIFI_Status_t;
+} ES_WIFI_Status_t;
 
 typedef enum {
   ES_WIFI_MODE_SINGLE           = 0,
   ES_WIFI_MODE_MULTI            = 1,
-}ES_WIFI_ConnMode_t;
+} ES_WIFI_ConnMode_t;
 
 typedef enum {
   ES_WIFI_TCP_CONNECTION        = 0,
@@ -66,7 +66,7 @@ typedef enum {
   ES_WIFI_UDP_LITE_CONNECTION   = 2,
   ES_WIFI_TCP_SSL_CONNECTION    = 3,
   ES_WIFI_MQTT_CONNECTION       = 4,
-}ES_WIFI_ConnType_t;
+} ES_WIFI_ConnType_t;
 
 /* Security settings for Wi-Fi network */
 typedef enum {
@@ -74,8 +74,8 @@ typedef enum {
   ES_WIFI_SEC_WEP  = 0x01,          /*!< Wired Equivalent Privacy option for Wi-Fi security. \note This mode can't be used when setting up ES_WIFI Wi-Fi */
   ES_WIFI_SEC_WPA  = 0x02,          /*!< Wi-Fi Protected Access */
   ES_WIFI_SEC_WPA2 = 0x03,          /*!< Wi-Fi Protected Access 2 */
-  ES_WIFI_SEC_WPA_WPA2= 0x04,       /*!< Wi-Fi Protected Access with both modes */
-  ES_WIFI_SEC_WPA2_TKIP= 0x05,      /*!< Wi-Fi Protected Access with both modes */
+  ES_WIFI_SEC_WPA_WPA2 = 0x04,      /*!< Wi-Fi Protected Access with both modes */
+  ES_WIFI_SEC_WPA2_TKIP = 0x05,     /*!< Wi-Fi Protected Access with both modes */
   ES_WIFI_SEC_UNKNOWN = 0xFF,       /*!< Wi-Fi Unknown Security mode */
 } ES_WIFI_SecurityType_t;
 
@@ -93,61 +93,61 @@ typedef enum {
 
 /* Communication interface */
 typedef enum {
-        COMM_UART,
-        COMM_SPI,
-        COMM_USB_HID,
-        COMM_USB_VCP
+  COMM_UART,
+  COMM_SPI,
+  COMM_USB_HID,
+  COMM_USB_VCP
 } comm_mode;
 
 /* virtual class necessary to abstract the Wi-Fi device                       */
 class WiFiDrvClass {
 
-protected :
+  protected :
 
-public :
+  public :
 
-  virtual ES_WIFI_Status_t ES_WIFI_Init() = 0;
-  virtual void ES_WIFI_ListAccessPoints() = 0;
-  virtual int ES_WIFI_GetApNbr() = 0;
-  virtual ES_WIFI_Status_t ES_WIFI_Connect(const char* SSID, const char* Password, ES_WIFI_SecurityType_t SecType) = 0;
-  virtual void ES_WIFI_Disconnect() = 0;
-  virtual uint8_t* ES_WIFI_GetMACAddress(uint8_t *mac) = 0;
-  virtual IPAddress ES_WIFI_GetIPAddress() = 0;
-  virtual IPAddress ES_WIFI_GetSubnetMask() = 0;
-  virtual IPAddress ES_WIFI_GetGatewayIP() = 0;
-  virtual uint8_t* ES_WIFI_GetSSID() = 0;
-  virtual uint8_t* ES_WIFI_GetSSID(uint8_t networkItem) = 0;
-  virtual uint8_t* ES_WIFI_GetBSSID(uint8_t *bbsid) = 0;
-  virtual int ES_WIFI_GetEncryptionType() = 0;
-  virtual int ES_WIFI_GetEncryptionType(uint8_t networkItem) = 0;
-  virtual int32_t ES_WIFI_GetRSSI() = 0;
-  virtual int32_t ES_WIFI_GetRSSI(uint8_t networkItem) = 0;
-  virtual uint8_t* ES_WIFI_GetProductID() = 0;
-  virtual char* ES_WIFI_GetFWRevID() = 0;
-  virtual uint8_t* ES_WIFI_GetRTOSRev() = 0;
-  virtual uint8_t* ES_WIFI_GetProductName() = 0;
-  virtual uint8_t* ES_WIFI_GetAPIRev() = 0;
-  virtual uint8_t* ES_WIFI_GetStackRev() = 0;
-  virtual void ES_WIFI_SetMACAddress(uint8_t *mac) = 0;
-  virtual void ES_WIFI_ResetToFactoryDefault() = 0;
-  virtual void  ES_WIFI_ResetModule() = 0;
-  virtual void ES_WIFI_SetProductName(uint8_t *ProductName) = 0;
-  virtual void ES_WIFI_Ping(uint8_t *address, uint16_t count, uint16_t interval_ms) = 0;
-  virtual void ES_WIFI_DNS_LookUp(const char *url, IPAddress *ipaddress) = 0;
-  virtual void ES_WIFI_getRemoteData(uint8_t sock, uint8_t *ip, uint16_t *port) = 0;
-  virtual void ES_WIFI_StartServerSingleConn(uint8_t index, comm_mode mode) = 0;
-  virtual void ES_WIFI_StopServerSingleConn(uint8_t index) = 0;
-  virtual void ES_WIFI_StartServerMultiConn(uint8_t socket, comm_mode mode);
-  virtual void ES_WIFI_StopServerMultiConn();
-  virtual void ES_WIFI_StartClientConnection(uint8_t index) = 0;
-  virtual void ES_WIFI_StopClientConnection(uint8_t index) = 0;
-  virtual void ES_WIFI_ReceiveData(uint8_t Socket, uint8_t *pdata, uint16_t Reqlen, uint16_t *Receivedlen, uint32_t Timeout)=0;
-  virtual void ES_WIFI_SetConnectionParam(uint8_t Number, ES_WIFI_ConnType_t Type, uint16_t LocalPort) = 0;
-  virtual void ES_WIFI_SetConnectionParam(uint8_t Number, ES_WIFI_ConnType_t Type, uint16_t LocalPort, IPAddress Ip) = 0;
-  virtual void ES_WIFI_SendResp(uint8_t Socket, uint8_t *pdata, uint16_t Reqlen , uint16_t *SentLen , uint32_t Timeout) = 0;
-  virtual uint8_t getCurrentSocket(void) = 0;
-  virtual int8_t getFreeSocket(void) = 0;
-  virtual uint8_t getSocketState(uint8_t socket) = 0;
+    virtual ES_WIFI_Status_t ES_WIFI_Init() = 0;
+    virtual void ES_WIFI_ListAccessPoints() = 0;
+    virtual int ES_WIFI_GetApNbr() = 0;
+    virtual ES_WIFI_Status_t ES_WIFI_Connect(const char *SSID, const char *Password, ES_WIFI_SecurityType_t SecType) = 0;
+    virtual void ES_WIFI_Disconnect() = 0;
+    virtual uint8_t *ES_WIFI_GetMACAddress(uint8_t *mac) = 0;
+    virtual IPAddress ES_WIFI_GetIPAddress() = 0;
+    virtual IPAddress ES_WIFI_GetSubnetMask() = 0;
+    virtual IPAddress ES_WIFI_GetGatewayIP() = 0;
+    virtual uint8_t *ES_WIFI_GetSSID() = 0;
+    virtual uint8_t *ES_WIFI_GetSSID(uint8_t networkItem) = 0;
+    virtual uint8_t *ES_WIFI_GetBSSID(uint8_t *bbsid) = 0;
+    virtual int ES_WIFI_GetEncryptionType() = 0;
+    virtual int ES_WIFI_GetEncryptionType(uint8_t networkItem) = 0;
+    virtual int32_t ES_WIFI_GetRSSI() = 0;
+    virtual int32_t ES_WIFI_GetRSSI(uint8_t networkItem) = 0;
+    virtual uint8_t *ES_WIFI_GetProductID() = 0;
+    virtual char *ES_WIFI_GetFWRevID() = 0;
+    virtual uint8_t *ES_WIFI_GetRTOSRev() = 0;
+    virtual uint8_t *ES_WIFI_GetProductName() = 0;
+    virtual uint8_t *ES_WIFI_GetAPIRev() = 0;
+    virtual uint8_t *ES_WIFI_GetStackRev() = 0;
+    virtual void ES_WIFI_SetMACAddress(uint8_t *mac) = 0;
+    virtual void ES_WIFI_ResetToFactoryDefault() = 0;
+    virtual void  ES_WIFI_ResetModule() = 0;
+    virtual void ES_WIFI_SetProductName(uint8_t *ProductName) = 0;
+    virtual void ES_WIFI_Ping(uint8_t *address, uint16_t count, uint16_t interval_ms) = 0;
+    virtual void ES_WIFI_DNS_LookUp(const char *url, IPAddress *ipaddress) = 0;
+    virtual void ES_WIFI_getRemoteData(uint8_t sock, uint8_t *ip, uint16_t *port) = 0;
+    virtual void ES_WIFI_StartServerSingleConn(uint8_t index, comm_mode mode) = 0;
+    virtual void ES_WIFI_StopServerSingleConn(uint8_t index) = 0;
+    virtual void ES_WIFI_StartServerMultiConn(uint8_t socket, comm_mode mode);
+    virtual void ES_WIFI_StopServerMultiConn();
+    virtual void ES_WIFI_StartClientConnection(uint8_t index) = 0;
+    virtual void ES_WIFI_StopClientConnection(uint8_t index) = 0;
+    virtual void ES_WIFI_ReceiveData(uint8_t Socket, uint8_t *pdata, uint16_t Reqlen, uint16_t *Receivedlen, uint32_t Timeout) = 0;
+    virtual void ES_WIFI_SetConnectionParam(uint8_t Number, ES_WIFI_ConnType_t Type, uint16_t LocalPort) = 0;
+    virtual void ES_WIFI_SetConnectionParam(uint8_t Number, ES_WIFI_ConnType_t Type, uint16_t LocalPort, IPAddress Ip) = 0;
+    virtual void ES_WIFI_SendResp(uint8_t Socket, uint8_t *pdata, uint16_t Reqlen, uint16_t *SentLen, uint32_t Timeout) = 0;
+    virtual uint8_t getCurrentSocket(void) = 0;
+    virtual int8_t getFreeSocket(void) = 0;
+    virtual uint8_t getSocketState(uint8_t socket) = 0;
 };
 #endif /*WiFi_Drv_H*/
 

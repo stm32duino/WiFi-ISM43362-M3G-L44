@@ -58,14 +58,13 @@ void WiFiServer::begin()
 {
   int8_t sock;
   sock = DrvWiFi->getFreeSocket();
-  if (sock != -1)
-  {
+  if (sock != -1) {
     DrvWiFi->ES_WIFI_SetConnectionParam(sock, ES_WIFI_TCP_CONNECTION, _port);
     DrvWiFi->ES_WIFI_StartServerSingleConn(sock, COMM_SPI);
   }
 }
 
-WiFiClient WiFiServer::available(byte* status)
+WiFiClient WiFiServer::available(byte *status)
 {
   static int cycle_server_down = 0;
   const int TH_SERVER_DOWN = 50;
@@ -74,21 +73,18 @@ WiFiClient WiFiServer::available(byte* status)
   WiFiClient client(sock);
   uint8_t _status = client.status();
 
-  if (status != NULL)
-  {
+  if (status != NULL) {
     *status = _status;
   }
 
   //server not in listen state, restart it
-  if (cycle_server_down++ > TH_SERVER_DOWN)
-  {
+  if (cycle_server_down++ > TH_SERVER_DOWN) {
     DrvWiFi->ES_WIFI_SetConnectionParam(sock, ES_WIFI_TCP_CONNECTION, _port);
     DrvWiFi->ES_WIFI_StartServerSingleConn(sock, COMM_SPI);
     cycle_server_down = 0;
   }
 
-  if (_status == SOCKET_BUSY)
-  {
+  if (_status == SOCKET_BUSY) {
     return client;
   }
   return WiFiClient(255);
@@ -99,7 +95,8 @@ WiFiClient WiFiServer::available(byte* status)
    @param  None
  * @retval None
  */
-uint8_t WiFiServer::status() {
+uint8_t WiFiServer::status()
+{
   return 1; // NOT SUPPORTED
 }
 
@@ -124,15 +121,12 @@ size_t WiFiServer::write(const uint8_t *buffer, size_t size)
 {
   size_t n = 0;
 
-  for (int sock = 0; sock < MAX_SOCK_NUM; sock++)
-  {
-    if (DrvWiFi->getSocketState(sock) != SOCK_NOT_AVAIL)
-    {
+  for (int sock = 0; sock < MAX_SOCK_NUM; sock++) {
+    if (DrvWiFi->getSocketState(sock) != SOCK_NOT_AVAIL) {
       WiFiClient client(sock);
 
-      if (client.status() == SOCKET_BUSY)
-      {
-        n+=client.write(buffer, size);
+      if (client.status() == SOCKET_BUSY) {
+        n += client.write(buffer, size);
       }
     }
   }

@@ -42,40 +42,40 @@
 
 class WiFiClass {
 
-private:
-uint8_t wifi_status;
-void init();
+  private:
+    uint8_t wifi_status;
+    void init();
 
-public:
+  public:
 
-  // WiFi device with SPI
-  WiFiClass(SPIClass *SPIx, uint8_t cs, uint8_t spiIRQ, uint8_t reset, uint8_t wakeup);
-  // WiFi device with UART
-  WiFiClass(HardwareSerial *UARTx, uint8_t reset, uint8_t wakeup);
-  // WiFi device with USB
-  WiFiClass(uint8_t tx, uint8_t rx, uint8_t reset, uint8_t wakeup);
+    // WiFi device with SPI
+    WiFiClass(SPIClass *SPIx, uint8_t cs, uint8_t spiIRQ, uint8_t reset, uint8_t wakeup);
+    // WiFi device with UART
+    WiFiClass(HardwareSerial *UARTx, uint8_t reset, uint8_t wakeup);
+    // WiFi device with USB
+    WiFiClass(uint8_t tx, uint8_t rx, uint8_t reset, uint8_t wakeup);
 
-  int begin(char* ssid);
-  int begin(char* ssid, uint8_t key_idx, const char* key);
-  int begin(char* ssid, const char *passphrase, ES_WIFI_SecurityType_t sectype = ES_WIFI_SEC_WPA_WPA2);
-  void disconnect(void);
-  uint8_t status();
-  char* firmwareVersion();
-  IPAddress localIP();
-  uint8_t* macAddress(uint8_t* mac);
-  IPAddress subnetMask();
-  IPAddress gatewayIP();
-  char* SSID();
-  char*	SSID(uint8_t networkItem);
-  uint8_t* BSSID(uint8_t* bssid);
-  int32_t RSSI();
-  int32_t RSSI(uint8_t networkItem);
-  uint8_t encryptionType();
-  uint8_t	encryptionType(uint8_t networkItem);
-  void setMac(uint8_t* macAddress);
-  int8_t scanNetworks();
-  static uint8_t getSocket();
-  int hostByName(const char* aHostname, IPAddress aResult);
+    int begin(char *ssid);
+    int begin(char *ssid, uint8_t key_idx, const char *key);
+    int begin(char *ssid, const char *passphrase, ES_WIFI_SecurityType_t sectype = ES_WIFI_SEC_WPA_WPA2);
+    void disconnect(void);
+    uint8_t status();
+    char *firmwareVersion();
+    IPAddress localIP();
+    uint8_t *macAddress(uint8_t *mac);
+    IPAddress subnetMask();
+    IPAddress gatewayIP();
+    char *SSID();
+    char *SSID(uint8_t networkItem);
+    uint8_t *BSSID(uint8_t *bssid);
+    int32_t RSSI();
+    int32_t RSSI(uint8_t networkItem);
+    uint8_t encryptionType();
+    uint8_t encryptionType(uint8_t networkItem);
+    void setMac(uint8_t *macAddress);
+    int8_t scanNetworks();
+    static uint8_t getSocket();
+    int hostByName(const char *aHostname, IPAddress aResult);
 };
 
 extern WiFiDrvClass *DrvWiFi;
