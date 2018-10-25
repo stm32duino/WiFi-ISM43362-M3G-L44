@@ -322,7 +322,7 @@ class IsmDrvClass : public WiFiDrvClass {
     void ParseIP(char *ptr, uint8_t *arr);
     ES_WIFI_SecurityType_t ParseSecurity(char *ptr);
     void AT_ParseInfo(uint8_t *pdata);
-    void AT_ParseAP(char *pdata, ES_WIFI_APs_t *APs);
+    bool AT_ParseSingleAP(char *pdata, ES_WIFI_AP_t *AP);
     void AT_ParseSystemConfig(char *pdata, ES_WIFI_SystemConfig_t *pConfig);
     void AT_ParseConnSettings(char *pdata, ES_WIFI_Network_t *NetSettings);
     void AT_ParseTrSettings(char *pdata, ES_WIFI_Conn_t *ConnSettings);

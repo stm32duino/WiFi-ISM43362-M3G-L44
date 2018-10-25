@@ -357,23 +357,23 @@ void IsmDrvClass::AT_ParseInfo(uint8_t *pdata)
 
 /**
   * @brief  Parses Access point configuration.
-  * @param  APs: Access points structure
-  * @param  ptr: pointer to string
-  * @retval None.
+  * @param  pdata: pointer to string
+  * @param  AP: Access point structure
+  * @retval boolean, true if parse ok
   */
-void IsmDrvClass::AT_ParseAP(char *pdata, ES_WIFI_APs_t *APs)
+bool IsmDrvClass::AT_ParseSingleAP(char *pdata, ES_WIFI_AP_t *AP)
 {
   uint8_t num = 0;
   char *ptr;
+  bool ret = false;
 
-  if ((pdata == NULL) || (APs == NULL)) {
-    return;
+  if (pdata == NULL) {
+    return false;
   }
 
-  APs->nbr = 0;
-  ptr = strtok(pdata + 2, ",");
+  ptr = strtok(pdata, ",");
 
-  while ((ptr != NULL) && (APs->nbr < ES_WIFI_MAX_DETECTED_AP)) {
+  while ((ptr != NULL) && (!ret)) {
     switch (num++) {
       case 0: /* Ignore index */
       case 4: /* Ignore Max Rate */
@@ -383,25 +383,24 @@ void IsmDrvClass::AT_ParseAP(char *pdata, ES_WIFI_APs_t *APs)
 
       case 1:
         ptr[strlen(ptr) - 1] = 0;
-        strncpy((char *)APs->AP[APs->nbr].SSID,  ptr + 1, ES_WIFI_MAX_SSID_NAME_SIZE + 1);
+        strncpy((char *)AP->SSID,  ptr + 1, ES_WIFI_MAX_SSID_NAME_SIZE + 1);
         break;
 
       case 2:
-        ParseMAC(ptr, APs->AP[APs->nbr].MAC);
+        ParseMAC(ptr, AP->MAC);
         break;
 
       case 3:
-        APs->AP[APs->nbr].RSSI = ParseNumber(ptr, NULL);
+        AP->RSSI = ParseNumber(ptr, NULL);
         break;
 
       case 6:
-        APs->AP[APs->nbr].Security = ParseSecurity(ptr);
+        AP->Security = ParseSecurity(ptr);
         break;
 
       case 8:
-        APs->AP[APs->nbr].Channel = ParseNumber(ptr, NULL);
-        APs->nbr++;
-        num = 1;
+        AP->Channel = ParseNumber(ptr, NULL);
+        ret = true;
         break;
 
       default:
@@ -409,6 +408,7 @@ void IsmDrvClass::AT_ParseAP(char *pdata, ES_WIFI_APs_t *APs)
     }
     ptr = strtok(NULL, ",");
   }
+  return ret;
 }
 
 /**
@@ -650,7 +650,7 @@ ES_WIFI_Status_t IsmDrvClass::AT_ReceiveCommand(uint8_t *pdata, uint16_t len)
         return ES_WIFI_STATUS_ERROR;
       } else {
         /* Some data still to get. Typically with AP list */
-        if (recv_len == len - AT_OK_STRING_LEN - 2) {
+        if (recv_len == (int16_t)(len - AT_OK_STRING_LEN - 2)) {
           return ES_WIFI_STATUS_REQ_DATA_STAGE;
         }
       }
@@ -851,12 +851,40 @@ ES_WIFI_Status_t  IsmDrvClass::ES_WIFI_SetTimeout(uint32_t Timeout)
 void IsmDrvClass::ES_WIFI_ListAccessPoints()
 {
   ES_WIFI_Status_t ret;
+  char *curr_ptr = NULL;
+  char *sav_ptr = NULL;
+  char pdata[128] = {'\0'};
+  /* Reset AP number */
+  ESWifiApObj.nbr = 0;
 
   strcpy((char *)EsWifiObj.CmdData, AT_SCAN);
   strcat((char *)EsWifiObj.CmdData, SUFFIX_CMD);
   ret = AT_ExecuteCommand();
   if ((ret == ES_WIFI_STATUS_OK) || (ret == ES_WIFI_STATUS_REQ_DATA_STAGE)) {
-    AT_ParseAP((char *)EsWifiObj.CmdData, &ESWifiApObj);
+    /* Init AP tokenization */
+    curr_ptr = strtok_r((char *)(EsWifiObj.CmdData), "\n", &sav_ptr);
+    while ((curr_ptr != NULL) && (ESWifiApObj.nbr < ES_WIFI_MAX_DETECTED_AP)) {
+      if ((*curr_ptr) != '#') {
+        curr_ptr = strtok_r(NULL, "\n", &sav_ptr);
+      } else {
+        /* save AP info */
+        strcpy(pdata, curr_ptr);
+        if (AT_ParseSingleAP(pdata, &(ESWifiApObj.AP[ESWifiApObj.nbr]))) {
+          ESWifiApObj.nbr++;
+          curr_ptr = strtok_r(NULL, "\n", &sav_ptr);
+        } else {
+          if (ret == ES_WIFI_STATUS_REQ_DATA_STAGE) {
+            strcpy((char *)EsWifiObj.CmdData, curr_ptr);
+            ret = AT_ReceiveCommand(EsWifiObj.CmdData + strlen(curr_ptr), ES_WIFI_DATA_SIZE - strlen(curr_ptr));
+            if ((ret != ES_WIFI_STATUS_OK) && (ret != ES_WIFI_STATUS_REQ_DATA_STAGE)) {
+              break;
+            }
+            curr_ptr = strtok_r((char *)(EsWifiObj.CmdData), "\n", &sav_ptr);
+          }
+        }
+      }
+    }
+    /* Flush last AP */
     while (ret == ES_WIFI_STATUS_REQ_DATA_STAGE) {
       ret = AT_ReceiveCommand(EsWifiObj.CmdData, ES_WIFI_DATA_SIZE);
     }
