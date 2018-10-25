@@ -51,6 +51,8 @@
 #warning "ES_WIFI_PAYLOAD_SIZE is higer than ES_WIFI_DATA_SIZE this could cause overflow!"
 #endif
 
+_Static_assert((ES_WIFI_DATA_SIZE & 1) == 0, "ES_WIFI_DATA_SIZE have to be even!");
+
 #define CHARISHEXNUM(x)                 (((x) >= '0' && (x) <= '9') || \
                                          ((x) >= 'a' && (x) <= 'f') || \
                                          ((x) >= 'A' && (x) <= 'F'))
