@@ -327,6 +327,7 @@ class IsmDrvClass : public WiFiDrvClass {
     void AT_ParseConnSettings(char *pdata, ES_WIFI_Network_t *NetSettings);
     void AT_ParseTrSettings(char *pdata, ES_WIFI_Conn_t *ConnSettings);
     ES_WIFI_Status_t AT_ExecuteCommand(void);
+    ES_WIFI_Status_t AT_ReceiveCommand(uint8_t *pdata, uint16_t Reqlen);
     ES_WIFI_Status_t AT_RequestSendData(uint8_t *cmd, uint16_t len, uint8_t *pdata);
     ES_WIFI_Status_t ReceiveShortDataLen(char *pdata, uint16_t Reqlen, uint16_t *ReadData);
     ES_WIFI_Status_t ReceiveLongDataLen(char *pdata, uint16_t Reqlen, uint16_t *ReadData);

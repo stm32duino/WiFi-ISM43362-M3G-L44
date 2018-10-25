@@ -624,15 +624,35 @@ ES_WIFI_Status_t IsmDrvClass::AT_ExecuteCommand(void)
   PRINTCMD(EsWifiObj.CmdData);
   ret = Drv->IO_Send(EsWifiObj.CmdData, strlen((char *)EsWifiObj.CmdData), EsWifiObj.Timeout);
   if (ret > 0) {
+    return AT_ReceiveCommand(EsWifiObj.CmdData, ES_WIFI_DATA_SIZE);
+  }
+  return ES_WIFI_STATUS_IO_ERROR;
+}
 
-    int16_t n = Drv->IO_Receive(EsWifiObj.CmdData, ES_WIFI_DATA_SIZE, EsWifiObj.Timeout);
-    if ((n > 0) && (n < ES_WIFI_DATA_SIZE)) {
-      PRINTCMD(EsWifiObj.CmdData);
-      *(EsWifiObj.CmdData + n) = 0;
-      if (strstr((char *)EsWifiObj.CmdData, AT_OK_STRING)) {
-        return ES_WIFI_STATUS_OK;
-      } else if (strstr((char *)EsWifiObj.CmdData, AT_ERROR_STRING)) {
+/**
+  * @brief  Receive command response
+  * @param  pdata: pointer to returned data
+  * @retval Operation Status.
+  */
+ES_WIFI_Status_t IsmDrvClass::AT_ReceiveCommand(uint8_t *pdata, uint16_t len)
+{
+  int16_t recv_len = 0;
+  /* Read len - AT_OK_STRING_LEN -2 to be able to
+     append '\0' and also ensure to get the full AT_OK_STRING_LEN in case of a full buffer */
+  recv_len = Drv->IO_Receive(pdata, len - AT_OK_STRING_LEN - 2, EsWifiObj.Timeout);
+  if ((recv_len > 0) && (recv_len < len)) {
+    *(pdata + recv_len) = 0;
+    PRINTCMD(pdata);
+    if (strstr((char *)pdata, AT_OK_STRING)) {
+      return ES_WIFI_STATUS_OK;
+    } else {
+      if (strstr((char *)pdata, AT_ERROR_STRING)) {
         return ES_WIFI_STATUS_ERROR;
+      } else {
+        /* Some data still to get. Typically with AP list */
+        if (recv_len == len - AT_OK_STRING_LEN - 2) {
+          return ES_WIFI_STATUS_REQ_DATA_STAGE;
+        }
       }
     }
   }
@@ -835,8 +855,11 @@ void IsmDrvClass::ES_WIFI_ListAccessPoints()
   strcpy((char *)EsWifiObj.CmdData, AT_SCAN);
   strcat((char *)EsWifiObj.CmdData, SUFFIX_CMD);
   ret = AT_ExecuteCommand();
-  if (ret == ES_WIFI_STATUS_OK) {
+  if ((ret == ES_WIFI_STATUS_OK) || (ret == ES_WIFI_STATUS_REQ_DATA_STAGE)) {
     AT_ParseAP((char *)EsWifiObj.CmdData, &ESWifiApObj);
+    while (ret == ES_WIFI_STATUS_REQ_DATA_STAGE) {
+      ret = AT_ReceiveCommand(EsWifiObj.CmdData, ES_WIFI_DATA_SIZE);
+    }
   }
 }
 
