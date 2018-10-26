@@ -44,28 +44,28 @@
 #define MAX_TRY_INIT    100
 #define MAX_SIZE_ANSWER 255
 
-class SpiDrvClass : public DriverClass{
+class SpiDrvClass : public DriverClass {
 
-private :
-  SPIClass *ISM43362;
-  uint8_t csPin;
-  SPISettings *Settings_43362;
-  uint8_t spiIRQPin;
+  private :
+    SPIClass *ISM43362;
+    uint8_t csPin;
+    SPISettings *Settings_43362;
+    uint8_t spiIRQPin;
 
-public:
+  public:
 
-  SpiDrvClass(SPIClass *SPIx, uint8_t cs, uint8_t spiIRQ, uint8_t reset, uint8_t wakeup);
+    SpiDrvClass(SPIClass *SPIx, uint8_t cs, uint8_t spiIRQ, uint8_t reset, uint8_t wakeup);
 
-  void Spi_Wifi_Reset();
-  void Spi_Slave_Select();
-  void Spi_Slave_Deselect();
-  uint8_t Spi_Get_Data_Ready_State();
+    void Spi_Wifi_Reset();
+    void Spi_Slave_Select();
+    void Spi_Slave_Deselect();
+    uint8_t Spi_Get_Data_Ready_State();
 
-  virtual int8_t IO_Init (void);
-  virtual void IO_DeInit (void);
-  virtual void IO_Delay (uint32_t time);
-  virtual int16_t IO_Send (uint8_t *data, uint16_t len, uint32_t timeout);
-  virtual int16_t IO_Receive (uint8_t *data, uint16_t len, uint32_t timeout);
+    virtual int8_t IO_Init(void);
+    virtual void IO_DeInit(void);
+    virtual void IO_Delay(uint32_t time);
+    virtual int16_t IO_Send(uint8_t *data, uint16_t len, uint32_t timeout);
+    virtual int16_t IO_Receive(uint8_t *data, uint16_t len, uint32_t timeout);
 };
 
 #endif // SPI_DRV_H

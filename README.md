@@ -33,7 +33,11 @@ List of the adaptations:
 
 ## Version
 
-The WiFi library is based on FW "Inventek eS-WiFi ISM43362-M3G-L44-SPI C3.5.2.3.BETA9".
+The WiFi library is based on FW "Inventek eS-WiFi ISM43362-M3G-L44-SPI C3.5.2.5.STM".
+
+To update the Inventek ISM-43362 Wi-Fi module firmware, please read the readme file for instructions
+include in this archive:
+https://www.st.com/resource/en/utilities/inventek_fw_updater.zip
 
 ## Supported Secure Wi-Fi authentication by the Wi-Fi module Inventek ISM43362-M3G-L44:
 * WEP-128
@@ -41,8 +45,8 @@ The WiFi library is based on FW "Inventek eS-WiFi ISM43362-M3G-L44-SPI C3.5.2.3.
 * WPA2-PSK
 
 ## Restriction
-* WiFiServerST is not stable due to issue of the current WiFi firmware version: C3.5.2.3.BETA9
-* WEP-128 is not functional. Issue probably due to the current WiFi firmware version: C3.5.2.3.BETA9
+* WiFiServerST is not stable due to issue of the current WiFi firmware version: C3.5.2.5.STM
+* WEP-128 is not functional. Issue probably due to the current WiFi firmware version: C3.5.2.5.STM
 
 ## Examples
 

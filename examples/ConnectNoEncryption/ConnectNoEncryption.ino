@@ -52,8 +52,8 @@ void setup() {
   Serial.print("Firmware version: ");
   Serial.println(fv);
 
-  if (fv != "C3.5.2.3.BETA9") {
-    Serial.println("Please upgrade the firmware");
+  if (fv != "C3.5.2.5.STM") {
+	Serial.println("Please upgrade the firmware");
   }
 
   // Set Mac Address of the device on the board (optional)
