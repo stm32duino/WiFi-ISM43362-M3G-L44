@@ -96,7 +96,7 @@ void loop() {
     char c = 0x35;
     Serial.println("New client connected");
     // an http request ends with a blank line
-    boolean currentLineIsBlank = true;
+    bool currentLineIsBlank = true;
     while (client.connected()) {
       dataRead(&c);
       // if you've received a newline character and the line is blank
