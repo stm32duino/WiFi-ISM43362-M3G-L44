@@ -125,7 +125,6 @@ void SpiDrvClass::Spi_Wifi_Reset()
 int8_t SpiDrvClass::IO_Init(void)
 {
   uint8_t Prompt[6];                     // data receive
-  uint8_t count = 0;                     // number of bytes receive
   uint32_t start;                        // start time for timeout
   uint16_t dummy_send = 0x0A0A;          // data to feed the clock
   uint16_t read_value;                   // data read
@@ -151,32 +150,28 @@ int8_t SpiDrvClass::IO_Init(void)
 
   start = millis();
 
+  for (uint8_t count = 0; count < 6; count += 2) {
+    read_value = ISM43362->transfer16(dummy_send);
+    Prompt[count] = (uint8_t)(read_value & 0x00FF);
+    Prompt[count + 1] = (uint8_t)((read_value & 0xFF00) >> 8);
+  }
+
   while (Spi_Get_Data_Ready_State()) {
-    read_value = ISM43362->transfer16(dummy_send);
-    Prompt[count] = (uint8_t)(read_value & 0x00FF);
-    Prompt[count + 1] = (uint8_t)((read_value & 0xFF00) >> 8);
-    count += 2;
-    read_value = ISM43362->transfer16(dummy_send);
-    Prompt[count] = (uint8_t)(read_value & 0x00FF);
-    Prompt[count + 1] = (uint8_t)((read_value & 0xFF00) >> 8);
-    count += 2;
-    read_value = ISM43362->transfer16(dummy_send);
-    Prompt[count] = (uint8_t)(read_value & 0x00FF);
-    Prompt[count + 1] = (uint8_t)((read_value & 0xFF00) >> 8);
     if ((millis() - start) > 100) {
       Spi_Slave_Deselect();
       printf("timeout io_init\n\r");
       return -1;
     }
   }
+
+  Spi_Slave_Deselect();
+
   // Check receive sequence
   if ((Prompt[0] != 0x15) || (Prompt[1] != 0x15) || (Prompt[2] != '\r') ||
       (Prompt[3] != '\n') || (Prompt[4] != '>') || (Prompt[5] != ' ')) {
-    Spi_Slave_Deselect();
     return -1;
   }
 
-  Spi_Slave_Deselect();
   return 0;
 }
 
