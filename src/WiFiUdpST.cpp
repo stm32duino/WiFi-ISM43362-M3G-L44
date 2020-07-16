@@ -89,9 +89,12 @@ int WiFiUDP::beginPacket(IPAddress ip, uint16_t port)
     }
   }
   if (_sock != NO_SOCKET_AVAIL) {
-    // set connection parameter and start client connection
-    DrvWiFi->ES_WIFI_SetConnectionParam(_sock, ES_WIFI_UDP_CONNECTION, port, ip);
-    DrvWiFi->ES_WIFI_StartClientConnection(_sock);
+    if (! DrvWiFi->isClientStarted(_sock)) {
+      // set connection parameter and start client connection
+      DrvWiFi->ES_WIFI_SetConnectionParam(_sock, ES_WIFI_UDP_CONNECTION, port, ip);
+      DrvWiFi->ES_WIFI_StartClientConnection(_sock);
+    }
+    DrvWiFi->resetUDPBuffer(_sock);
     return 1;
   }
   return 0;
@@ -115,15 +118,11 @@ int WiFiUDP::beginPacket(const char *host, uint16_t port)
  * @brief  Finish off this packet and send it
  * @param  None
  * @retval 1 if the packet was sent successfully, 0 if there was an error
- * @Note Function not supported, always return 1
  */
 int WiFiUDP::endPacket()
 {
-  /***************************************************************************/
-  /*                               NOT SUPPORTED                             */
-  /* The current device directly send data when there are write in the socket*/
-  /***************************************************************************/
-  return 1;
+  uint16_t sent = 0;
+  return DrvWiFi->ES_WIFI_SendBuf(_sock, &sent, WIFI_TIMEOUT);
 }
 
 /**
@@ -137,8 +136,8 @@ size_t WiFiUDP::write(const uint8_t *buffer, size_t size)
   uint16_t SentLen = 0; // number of data really send
   uint8_t *temp = (uint8_t *)buffer;
 
-  DrvWiFi->ES_WIFI_SendResp(_sock, temp, size, &SentLen, WIFI_TIMEOUT);
-
+  DrvWiFi->addToUDPBuffer(_sock, buffer, size, &SentLen);
+  
   return SentLen;
 }
 

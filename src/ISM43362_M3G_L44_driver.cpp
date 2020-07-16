@@ -91,6 +91,8 @@ IsmDrvClass::IsmDrvClass(SPIClass *SPIx, uint8_t cs, uint8_t spiIRQ,
   Drv = new SpiDrvClass(SPIx, cs, spiIRQ, reset, wakeup);
   for (int i = 0; i < MAX_SOCK_NUM; i++) {
     sockState[i] = SOCKET_FREE;
+    ESWifiConnTab[i].BufferSize  = 0;
+    ESWifiConnTab[i].ClientStarted = false;
   }
   currentSock = 0;
 }
@@ -116,6 +118,8 @@ IsmDrvClass::IsmDrvClass(HardwareSerial *UARTx,  uint8_t reset, uint8_t wakeup)
   // Drv = new UARTDrvClass(UARTx, reset, wakeup);
   for (int i = 0; i < MAX_SOCK_NUM; i++) {
     sockState[i] = SOCKET_FREE;
+    ESWifiConnTab[i].BufferSize  = 0;
+    ESWifiConnTab[i].ClientStarted = false;
   }
   currentSock = 0;
 }
@@ -143,6 +147,8 @@ IsmDrvClass::IsmDrvClass(uint8_t tx, uint8_t rx, uint8_t reset, uint8_t wakeup)
   // Drv = new USBDrvClass(tx, rx, reset, wakeup);
   for (int i = 0; i < MAX_SOCK_NUM; i++) {
     sockState[i] = SOCKET_FREE;
+    ESWifiConnTab[i].BufferSize  = 0;
+    ESWifiConnTab[i].ClientStarted = false;
   }
   currentSock = 0;
 }
@@ -1355,6 +1361,7 @@ void IsmDrvClass::ES_WIFI_StartClientConnection(uint8_t index)
 
   currentSock = index;
   sockState[index] = SOCKET_BUSY;
+  ESWifiConnTab[index].BufferSize = 0;
   sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
           AT_TR_SET_SOCKET, ESWifiConnTab[index].Number, SUFFIX_CMD);
   ret = AT_ExecuteCommand();
@@ -1388,6 +1395,9 @@ void IsmDrvClass::ES_WIFI_StartClientConnection(uint8_t index)
           sprintf((char *)EsWifiObj.CmdData, "%s=1%s",
                   AT_TR_CLIENT, SUFFIX_CMD);
           ret = AT_ExecuteCommand();
+	  if (ret == ES_WIFI_STATUS_OK) {
+	    ESWifiConnTab[index].ClientStarted = true;
+	  }
         }
       }
     }
@@ -1405,6 +1415,7 @@ void IsmDrvClass::ES_WIFI_StopClientConnection(uint8_t index)
 
   currentSock = index;
   sockState[currentSock] = SOCKET_FREE;
+  ESWifiConnTab[currentSock].BufferSize = 0;
   sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
           AT_TR_SET_SOCKET, index, SUFFIX_CMD);
   ret = AT_ExecuteCommand();
@@ -1413,6 +1424,9 @@ void IsmDrvClass::ES_WIFI_StopClientConnection(uint8_t index)
     sprintf((char *)EsWifiObj.CmdData, "%s=0%s",
             AT_TR_CLIENT, SUFFIX_CMD);
     ret =  AT_ExecuteCommand();
+    if (ret ==  ES_WIFI_STATUS_OK) {
+      ESWifiConnTab[index].ClientStarted = false;
+    }
   }
 }
 
@@ -1694,6 +1708,26 @@ void IsmDrvClass::ES_WIFI_SendResp(uint8_t Socket, uint8_t *pdata,
 }
 
 /**
+  * @brief  Send current UDP buffer over WIFI.
+  * @param  Socket  : number of the socket
+  * @param  SentLen : length of data really send
+  * @param  Timeout : Timeout for sending data in ms (range of 0 to 30000)
+  * @retval 1 if all data has been written, 0 otherwise.
+  */
+uint8_t IsmDrvClass::ES_WIFI_SendBuf(uint8_t Socket, uint16_t *SentLen, uint32_t Timeout)
+{
+  *SentLen = 0;
+  if (Socket >= MAX_SOCK_NUM) {
+    return 0;
+  }
+  ES_WIFI_SendResp(Socket, ESWifiConnTab[Socket].Buffer, ESWifiConnTab[Socket].BufferSize,
+		   SentLen, Timeout);
+  uint8_t ret = (ESWifiConnTab[Socket].BufferSize == *SentLen ? 1 : 0);
+  ESWifiConnTab[Socket].BufferSize = 0;
+  return ret;
+}  
+
+/**
   * @brief  Receive an amount data over WIFI.
   * @param  Socket      : number of the socket
   * @param  pdata       : pointer to data
@@ -1756,6 +1790,10 @@ void IsmDrvClass::ES_WIFI_SetConnectionParam(uint8_t Number, ES_WIFI_ConnType_t 
     ESWifiConnTab[Number].Number = Number;
     ESWifiConnTab[Number].Type = Type;
     ESWifiConnTab[Number].LocalPort = LocalPort;
+    if (ESWifiConnTab[Number].BufferSize != 0) {
+      // UDP buffer not empty, reset it
+      ESWifiConnTab[Number].BufferSize = 0;
+    }
   }
 }
 
@@ -1776,6 +1814,10 @@ void IsmDrvClass::ES_WIFI_SetConnectionParam(uint8_t Number, ES_WIFI_ConnType_t 
     ESWifiConnTab[Number].LocalPort = LocalPort;
     for (int i = 0; i < 4; i++) {
       ESWifiConnTab[Number].RemoteIP[i] = Ip[i];
+    }
+    if (ESWifiConnTab[Number].BufferSize != 0) {
+      // UDP buffer not empty, reset it
+      ESWifiConnTab[Number].BufferSize = 0;
     }
   }
 }
@@ -1841,5 +1883,67 @@ uint8_t IsmDrvClass::getSocketState(uint8_t socket)
     return (uint8_t)SOCKET_BUSY;
   }
 }
+
+/**
+  * @brief  Add data to the current UDP datagram 
+  * @param  socket: socket number
+  * @param  pdata: pointer to the data buffer to add
+  * @param  len: data buffer length
+  * @param  added len: number of data bytes actually added.
+  * @retval None.
+  */
+void IsmDrvClass::addToUDPBuffer(uint8_t socket, const uint8_t *pdata,
+				 uint16_t len, uint16_t *added_len)
+{
+  *added_len = 0;
+  if ((pdata == nullptr) || (len == 0)) {
+    return;
+  }
+  
+  if (socket < MAX_SOCK_NUM) {
+    if ((sockState[socket] == SOCKET_BUSY) && (ESWifiConnTab[socket].Type == ES_WIFI_UDP_CONNECTION)) {
+      if (ESWifiConnTab[socket].BufferSize == ES_WIFI_PAYLOAD_SIZE) {
+	return;
+      }
+      uint16_t towrite = ( ((ESWifiConnTab[socket].BufferSize + len) > ES_WIFI_PAYLOAD_SIZE) ?
+			   ES_WIFI_PAYLOAD_SIZE - ESWifiConnTab[socket].BufferSize :
+			   len );
+      uint8_t *dest = &ESWifiConnTab[socket].Buffer[ESWifiConnTab[socket].BufferSize];
+      memcpy(dest, pdata, towrite);
+      ESWifiConnTab[socket].BufferSize += towrite;
+      *added_len = towrite;
+    }
+  }
+}
+			   
+/**
+  * @brief  Reset the UDP datagram sending buffer
+  * @param  socket: socket number
+  * @retval None
+  */
+void IsmDrvClass::resetUDPBuffer(uint8_t socket)
+{
+  if (socket < MAX_SOCK_NUM) {
+    ESWifiConnTab[socket].BufferSize = 0;
+  }
+}
+
+      
+/**
+  * @brief  Get the UDP client state.
+  * @param  socket: socket number
+  * @retval true or false depending on the UDP client being started or not.
+  */
+bool IsmDrvClass::isClientStarted(uint8_t socket)
+{
+  bool ret = false;
+  if (socket < MAX_SOCK_NUM) {
+    if (sockState[socket] == SOCKET_BUSY) {
+      ret = ESWifiConnTab[socket].ClientStarted;
+    }
+  }
+  return ret;
+}
+    
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

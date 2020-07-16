@@ -145,9 +145,13 @@ class WiFiDrvClass {
     virtual void ES_WIFI_SetConnectionParam(uint8_t Number, ES_WIFI_ConnType_t Type, uint16_t LocalPort) = 0;
     virtual void ES_WIFI_SetConnectionParam(uint8_t Number, ES_WIFI_ConnType_t Type, uint16_t LocalPort, IPAddress Ip) = 0;
     virtual void ES_WIFI_SendResp(uint8_t Socket, uint8_t *pdata, uint16_t Reqlen, uint16_t *SentLen, uint32_t Timeout) = 0;
+    virtual uint8_t ES_WIFI_SendBuf(uint8_t Socket, uint16_t *SentLen, uint32_t Timeout) = 0;
     virtual uint8_t getCurrentSocket(void) = 0;
     virtual int8_t getFreeSocket(void) = 0;
     virtual uint8_t getSocketState(uint8_t socket) = 0;
+    virtual void addToUDPBuffer(uint8_t socket, const uint8_t *pdata, uint16_t len, uint16_t *added_len) = 0;
+    virtual void resetUDPBuffer(uint8_t socket) = 0;
+    virtual bool isClientStarted(uint8_t socket) = 0;
 };
 #endif /*WiFi_Drv_H*/
 
