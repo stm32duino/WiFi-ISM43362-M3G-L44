@@ -89,7 +89,7 @@ int WiFiUDP::beginPacket(IPAddress ip, uint16_t port)
     }
   }
   if (_sock != NO_SOCKET_AVAIL) {
-    if (! DrvWiFi->isClientStarted(_sock)) {
+    if (! DrvWiFi->isUDPClientStarted(_sock)) {
       // set connection parameter and start client connection
       DrvWiFi->ES_WIFI_SetConnectionParam(_sock, ES_WIFI_UDP_CONNECTION, port, ip);
       DrvWiFi->ES_WIFI_StartClientConnection(_sock);
@@ -122,7 +122,7 @@ int WiFiUDP::beginPacket(const char *host, uint16_t port)
 int WiFiUDP::endPacket()
 {
   uint16_t sent = 0;
-  return DrvWiFi->ES_WIFI_SendBuf(_sock, &sent, WIFI_TIMEOUT);
+  return DrvWiFi->ES_WIFI_SendUDPBuf(_sock, &sent, WIFI_TIMEOUT);
 }
 
 /**
