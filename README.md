@@ -22,7 +22,6 @@ List of the adaptations:
 * **flush()**: empty function. Do nothing (already empty in Arduino Wifi API).
 
 ### WiFiUdpST:
-* **endPacket()**: not supported. Always returns 1. The data are sent when you call write().
 * **available()**: not supported. Always returns 0.
 * **parsePAcket()**: not supported. Always returns 0.
 * **peek()**: not supported. Always returns 0.
