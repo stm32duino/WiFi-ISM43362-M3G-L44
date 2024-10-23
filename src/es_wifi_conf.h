@@ -57,21 +57,21 @@
 #define ES_WIFI_RTOS_REV_SIZE           16
 
 #ifndef ES_WIFI_DATA_SIZE
-#define ES_WIFI_DATA_SIZE               1400
+  #define ES_WIFI_DATA_SIZE             1400
 #endif
 #ifndef ES_WIFI_MAX_DETECTED_AP
-#define ES_WIFI_MAX_DETECTED_AP         10
+  #define ES_WIFI_MAX_DETECTED_AP       10
 #endif
 #ifndef ES_WIFI_TIMEOUT
-#define ES_WIFI_TIMEOUT                 0x0FFF
+  #define ES_WIFI_TIMEOUT               0x0FFF
 #endif
 #define NO_SOCKET_AVAIL                 255
 
 #ifndef ES_WIFI_PAYLOAD_SIZE
-#define ES_WIFI_PAYLOAD_SIZE            1200
+  #define ES_WIFI_PAYLOAD_SIZE          1200
 #endif
 #ifndef TIMEOUT_OFFSET
-#define TIMEOUT_OFFSET                  100U
+  #define TIMEOUT_OFFSET                100U
 #endif
 
 #endif /*__ES_WIFI_CONF_H*/

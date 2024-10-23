@@ -50,6 +50,7 @@ class WiFiUDP : public UDP {
     virtual int beginPacket(IPAddress ip, uint16_t port);
     virtual int beginPacket(const char *host, uint16_t port);
     virtual int endPacket();
+    int endPacket(bool stop);
     virtual size_t write(uint8_t);
     virtual size_t write(const uint8_t *buffer, size_t size);
     using Print::write;
