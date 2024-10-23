@@ -47,17 +47,18 @@ WiFiUDP::WiFiUDP() : _sock(NO_SOCKET_AVAIL) {}
  */
 uint8_t WiFiUDP::begin(uint16_t port)
 {
-
+  int ret = 0;
   int8_t sock = DrvWiFi->getFreeSocket(); // get next free socket
   if (sock != -1) {
     // Set connection parameter and start server
-    DrvWiFi->ES_WIFI_SetConnectionParam(sock, ES_WIFI_UDP_CONNECTION, port);
-    DrvWiFi->ES_WIFI_StartServerSingleConn(sock, COMM_SPI);
-    _sock = sock;
-    _port = port;
-    return 1;
+    if (DrvWiFi->ES_WIFI_SetConnectionParam(sock, ES_WIFI_UDP_CONNECTION, port)) {
+      DrvWiFi->ES_WIFI_StartServerSingleConn(sock, COMM_SPI);
+      _sock = sock;
+      _port = port;
+      ret = 1;
+    }
   }
-  return 0;
+  return ret;
 }
 
 /**
@@ -82,19 +83,25 @@ void WiFiUDP::stop()
 int WiFiUDP::beginPacket(IPAddress ip, uint16_t port)
 {
   int8_t sock;
+  int ret = 0;
   if (_sock == NO_SOCKET_AVAIL) {
     sock = DrvWiFi->getFreeSocket(); // get next free socket
     if (sock != -1) {
       _sock = sock;
     }
+    if (_sock != NO_SOCKET_AVAIL) {
+      // set connection parameter and start client connection
+      if (DrvWiFi->ES_WIFI_SetConnectionParam(_sock, ES_WIFI_UDP_CONNECTION, port, ip)) {
+        if (DrvWiFi->ES_WIFI_StartClientConnection(_sock)) {
+          ret = 1;
+        }
+      }
+    }
+  } else {
+    // already connected
+    ret = 1;
   }
-  if (_sock != NO_SOCKET_AVAIL) {
-    // set connection parameter and start client connection
-    DrvWiFi->ES_WIFI_SetConnectionParam(_sock, ES_WIFI_UDP_CONNECTION, port, ip);
-    DrvWiFi->ES_WIFI_StartClientConnection(_sock);
-    return 1;
-  }
-  return 0;
+  return ret;
 }
 
 /**
@@ -112,18 +119,24 @@ int WiFiUDP::beginPacket(const char *host, uint16_t port)
 }
 
 /**
- * @brief  Finish off this packet and send it
- * @param  None
- * @retval 1 if the packet was sent successfully, 0 if there was an error
- * @Note Function not supported, always return 1
+ * @brief  Finish off this packet
+ * @param  stop: optional boolean to stop or not the connection started by beginPacket(). Default:false
+ * @retval 1 if successful, 0 if there was an error (only if stop is true)
+ * @note   The current device directly send data when there are write in the socket
  */
 int WiFiUDP::endPacket()
 {
-  /***************************************************************************/
-  /*                               NOT SUPPORTED                             */
-  /* The current device directly send data when there are write in the socket*/
-  /***************************************************************************/
-  return 1;
+  return endPacket(false);
+}
+
+int WiFiUDP::endPacket(bool stop)
+{
+  int ret = 1;
+  if (stop) {
+    ret = DrvWiFi->ES_WIFI_StopClientConnection(_sock);
+    _sock = NO_SOCKET_AVAIL;
+  }
+  return ret;
 }
 
 /**

@@ -48,7 +48,7 @@
 #include "ISM43362_M3G_L44_driver.h"
 
 #if (ES_WIFI_PAYLOAD_SIZE + AT_ERROR_STRING_LEN) > ES_WIFI_DATA_SIZE
-#warning "ES_WIFI_PAYLOAD_SIZE is higer than ES_WIFI_DATA_SIZE this could cause overflow!"
+  #warning "ES_WIFI_PAYLOAD_SIZE is higer than ES_WIFI_DATA_SIZE this could cause overflow!"
 #endif
 
 _Static_assert((ES_WIFI_DATA_SIZE & 1) == 0, "ES_WIFI_DATA_SIZE have to be even!");
@@ -1347,12 +1347,11 @@ void IsmDrvClass::ES_WIFI_DNS_LookUp(const char *url, IPAddress *ipaddress)
 /**
   * @brief  Configure and Start a Client connection.
   * @param  index : index of structure connection
-  * @retval None.
+  * @retval boolean, true if connection is established.
   */
-void IsmDrvClass::ES_WIFI_StartClientConnection(uint8_t index)
+bool IsmDrvClass::ES_WIFI_StartClientConnection(uint8_t index)
 {
   ES_WIFI_Status_t ret;
-
   currentSock = index;
   sockState[index] = SOCKET_BUSY;
   sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
@@ -1392,14 +1391,15 @@ void IsmDrvClass::ES_WIFI_StartClientConnection(uint8_t index)
       }
     }
   }
+  return (ret == ES_WIFI_STATUS_OK);
 }
 
 /**
   * @brief  Stop Client connection.
   * @param  index : index of structure connection
-  * @retval None.
+  * @retval boolean, true if success, false otherwise
   */
-void IsmDrvClass::ES_WIFI_StopClientConnection(uint8_t index)
+bool IsmDrvClass::ES_WIFI_StopClientConnection(uint8_t index)
 {
   ES_WIFI_Status_t ret;
 
@@ -1414,6 +1414,7 @@ void IsmDrvClass::ES_WIFI_StopClientConnection(uint8_t index)
             AT_TR_CLIENT, SUFFIX_CMD);
     ret =  AT_ExecuteCommand();
   }
+  return (ret == ES_WIFI_STATUS_OK);
 }
 
 /**
@@ -1427,69 +1428,67 @@ void IsmDrvClass::ES_WIFI_StartServerSingleConn(uint8_t index, comm_mode mode)
   ES_WIFI_Status_t ret = ES_WIFI_STATUS_ERROR;
   char *ptr;
 
-  if (index > MAX_SOCK_NUM) {
-    return;
-  }
-
-  sprintf((char *)EsWifiObj.CmdData, "%s=1,3000%s",
-          AT_TR_TCP_KEEP_ALIVE, SUFFIX_CMD);
-  ret = AT_ExecuteCommand();
-  if (ret == ES_WIFI_STATUS_OK) {
-    currentSock = index;
-    sockState[currentSock] = SOCKET_BUSY;
-    sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
-            AT_TR_SET_SOCKET, ESWifiConnTab[index].Number, SUFFIX_CMD);
+  if (index <= MAX_SOCK_NUM) {
+    sprintf((char *)EsWifiObj.CmdData, "%s=1,3000%s",
+            AT_TR_TCP_KEEP_ALIVE, SUFFIX_CMD);
     ret = AT_ExecuteCommand();
     if (ret == ES_WIFI_STATUS_OK) {
+      currentSock = index;
+      sockState[currentSock] = SOCKET_BUSY;
       sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
-              AT_TR_SET_PROTOCOL, ESWifiConnTab[index].Type, SUFFIX_CMD);
+              AT_TR_SET_SOCKET, ESWifiConnTab[index].Number, SUFFIX_CMD);
       ret = AT_ExecuteCommand();
       if (ret == ES_WIFI_STATUS_OK) {
         sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
-                AT_TR_SET_LOCAL_PORT_NUMBER, ESWifiConnTab[index].LocalPort, SUFFIX_CMD);
+                AT_TR_SET_PROTOCOL, ESWifiConnTab[index].Type, SUFFIX_CMD);
         ret = AT_ExecuteCommand();
         if (ret == ES_WIFI_STATUS_OK) {
-          sprintf((char *)EsWifiObj.CmdData, "%s=1%s",
-                  AT_TR_SERVER, SUFFIX_CMD);
+          sprintf((char *)EsWifiObj.CmdData, "%s=%d%s",
+                  AT_TR_SET_LOCAL_PORT_NUMBER, ESWifiConnTab[index].LocalPort, SUFFIX_CMD);
           ret = AT_ExecuteCommand();
-
           if (ret == ES_WIFI_STATUS_OK) {
-            if (mode == COMM_UART) {
-              if (Drv->IO_Receive(EsWifiObj.CmdData, 0, EsWifiObj.Timeout) > 0) {
-                if (strstr((char *)EsWifiObj.CmdData, "Accepted")) {
-                  ptr = strtok((char *)EsWifiObj.CmdData + 2, " ");
-                  ptr = strtok(NULL, " ");
-                  ptr = strtok(NULL, " ");
-                  ptr = strtok(NULL, ":");
-                  ParseIP((char *)ptr, ESWifiConnTab[index].RemoteIP);
-                  ret = ES_WIFI_STATUS_OK;
-                }
-              }
-            } else if (mode == COMM_SPI) {
-              do {
-                strcpy((char *)EsWifiObj.CmdData, AT_MESSAGE_READ);
-                strcat((char *)EsWifiObj.CmdData, SUFFIX_CMD);
-                ret = AT_ExecuteCommand();
-                if (ret == ES_WIFI_STATUS_OK) {
-                  if ((strstr((char *)EsWifiObj.CmdData, "[SOMA]")) && (strstr((char *)EsWifiObj.CmdData, "[EOMA]"))) {
-                    if (strstr((char *)EsWifiObj.CmdData, "Accepted")) {
-                      ptr = strtok((char *)EsWifiObj.CmdData + 2, " ");
-                      ptr = strtok(NULL, " ");
-                      ptr = strtok(NULL, " ");
-                      ptr = strtok(NULL, ":");
-                      ParseIP((char *)ptr, ESWifiConnTab[index].RemoteIP);
-                      ret = ES_WIFI_STATUS_OK;
-                      break;
-                    }
+            sprintf((char *)EsWifiObj.CmdData, "%s=1%s",
+                    AT_TR_SERVER, SUFFIX_CMD);
+            ret = AT_ExecuteCommand();
+
+            if (ret == ES_WIFI_STATUS_OK) {
+              if (mode == COMM_UART) {
+                if (Drv->IO_Receive(EsWifiObj.CmdData, 0, EsWifiObj.Timeout) > 0) {
+                  if (strstr((char *)EsWifiObj.CmdData, "Accepted")) {
+                    ptr = strtok((char *)EsWifiObj.CmdData + 2, " ");
+                    ptr = strtok(NULL, " ");
+                    ptr = strtok(NULL, " ");
+                    ptr = strtok(NULL, ":");
+                    ParseIP((char *)ptr, ESWifiConnTab[index].RemoteIP);
+                    ret = ES_WIFI_STATUS_OK;
                   }
-                } else {
-                  ret = ES_WIFI_STATUS_ERROR;
-                  break;
                 }
-                Drv->IO_Delay(1000);
-              } while (1);
-            } else {
-              ret = ES_WIFI_STATUS_ERROR;
+              } else if (mode == COMM_SPI) {
+                do {
+                  strcpy((char *)EsWifiObj.CmdData, AT_MESSAGE_READ);
+                  strcat((char *)EsWifiObj.CmdData, SUFFIX_CMD);
+                  ret = AT_ExecuteCommand();
+                  if (ret == ES_WIFI_STATUS_OK) {
+                    if ((strstr((char *)EsWifiObj.CmdData, "[SOMA]")) && (strstr((char *)EsWifiObj.CmdData, "[EOMA]"))) {
+                      if (strstr((char *)EsWifiObj.CmdData, "Accepted")) {
+                        ptr = strtok((char *)EsWifiObj.CmdData + 2, " ");
+                        ptr = strtok(NULL, " ");
+                        ptr = strtok(NULL, " ");
+                        ptr = strtok(NULL, ":");
+                        ParseIP((char *)ptr, ESWifiConnTab[index].RemoteIP);
+                        ret = ES_WIFI_STATUS_OK;
+                        break;
+                      }
+                    }
+                  } else {
+                    ret = ES_WIFI_STATUS_ERROR;
+                    break;
+                  }
+                  Drv->IO_Delay(1000);
+                } while (1);
+              } else {
+                ret = ES_WIFI_STATUS_ERROR;
+              }
             }
           }
         }
@@ -1748,36 +1747,25 @@ void IsmDrvClass::ES_WIFI_ReceiveData(uint8_t Socket, uint8_t *pdata,
   * @param  Number    : socket number
   * @param  Type      : Type of connection (UDP, TCP)
   * @param  LocalPort : local port
-  * @retval None.
-  */
-void IsmDrvClass::ES_WIFI_SetConnectionParam(uint8_t Number, ES_WIFI_ConnType_t Type, uint16_t LocalPort)
-{
-  if (Number < MAX_SOCK_NUM) {
-    ESWifiConnTab[Number].Number = Number;
-    ESWifiConnTab[Number].Type = Type;
-    ESWifiConnTab[Number].LocalPort = LocalPort;
-  }
-}
-
-/**
-  * @brief  Set connection parameter in the struct
-  * @param  Number    : socket number
-  * @param  Type      : Type of connection (UDP, TCP)
-  * @param  LocalPort : local port
   * @param  Ip        : Remote IP address
-  * @retval None.
+  * @retval boolean, true if success, false otherwise
   */
-void IsmDrvClass::ES_WIFI_SetConnectionParam(uint8_t Number, ES_WIFI_ConnType_t Type, uint16_t LocalPort, IPAddress Ip)
+bool IsmDrvClass::ES_WIFI_SetConnectionParam(uint8_t Number, ES_WIFI_ConnType_t Type, uint16_t LocalPort, IPAddress Ip)
 {
+  bool ret = false;
   if (Number < MAX_SOCK_NUM) {
     ESWifiConnTab[Number].Number = Number;
     ESWifiConnTab[Number].Type = Type;
     ESWifiConnTab[Number].RemotePort = LocalPort;
     ESWifiConnTab[Number].LocalPort = LocalPort;
-    for (int i = 0; i < 4; i++) {
-      ESWifiConnTab[Number].RemoteIP[i] = Ip[i];
+    if (Ip != INADDR_NONE) {
+      for (int i = 0; i < 4; i++) {
+        ESWifiConnTab[Number].RemoteIP[i] = Ip[i];
+      }
     }
+    ret = true;
   }
+  return ret;
 }
 
 /**

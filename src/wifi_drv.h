@@ -139,11 +139,10 @@ class WiFiDrvClass {
     virtual void ES_WIFI_StopServerSingleConn(uint8_t index) = 0;
     virtual void ES_WIFI_StartServerMultiConn(uint8_t socket, comm_mode mode) = 0;
     virtual void ES_WIFI_StopServerMultiConn() = 0;
-    virtual void ES_WIFI_StartClientConnection(uint8_t index) = 0;
-    virtual void ES_WIFI_StopClientConnection(uint8_t index) = 0;
+    virtual bool ES_WIFI_StartClientConnection(uint8_t index) = 0;
+    virtual bool ES_WIFI_StopClientConnection(uint8_t index) = 0;
     virtual void ES_WIFI_ReceiveData(uint8_t Socket, uint8_t *pdata, uint16_t Reqlen, uint16_t *Receivedlen, uint32_t Timeout) = 0;
-    virtual void ES_WIFI_SetConnectionParam(uint8_t Number, ES_WIFI_ConnType_t Type, uint16_t LocalPort) = 0;
-    virtual void ES_WIFI_SetConnectionParam(uint8_t Number, ES_WIFI_ConnType_t Type, uint16_t LocalPort, IPAddress Ip) = 0;
+    virtual bool ES_WIFI_SetConnectionParam(uint8_t Number, ES_WIFI_ConnType_t Type, uint16_t LocalPort, IPAddress Ip = INADDR_NONE) = 0;
     virtual void ES_WIFI_SendResp(uint8_t Socket, uint8_t *pdata, uint16_t Reqlen, uint16_t *SentLen, uint32_t Timeout) = 0;
     virtual uint8_t getCurrentSocket(void) = 0;
     virtual int8_t getFreeSocket(void) = 0;

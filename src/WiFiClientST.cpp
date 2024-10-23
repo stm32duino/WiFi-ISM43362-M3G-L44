@@ -62,6 +62,7 @@ WiFiClient::WiFiClient(uint8_t sock) : _sock(sock)
 int WiFiClient::connect(IPAddress ip, uint16_t port)
 {
   int8_t sock;
+  int ret = 0;
   if (_sock == NO_SOCKET_AVAIL) {
     sock = DrvWiFi->getFreeSocket(); // get next free socket
     if (sock != -1) {
@@ -70,11 +71,13 @@ int WiFiClient::connect(IPAddress ip, uint16_t port)
   }
   if (_sock != NO_SOCKET_AVAIL) {
     // set connection parameter and start client
-    DrvWiFi->ES_WIFI_SetConnectionParam(_sock, ES_WIFI_TCP_CONNECTION, port, ip);
-    DrvWiFi->ES_WIFI_StartClientConnection(_sock);
-    return 1;
+    if (DrvWiFi->ES_WIFI_SetConnectionParam(_sock, ES_WIFI_TCP_CONNECTION, port, ip)) {
+      if (DrvWiFi->ES_WIFI_StartClientConnection(_sock)) {
+        ret = 1;
+      }
+    }
   }
-  return 0;
+  return ret;
 }
 
 /**

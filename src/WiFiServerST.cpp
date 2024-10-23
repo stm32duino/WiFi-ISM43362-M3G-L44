@@ -59,8 +59,9 @@ void WiFiServer::begin()
   int8_t sock;
   sock = DrvWiFi->getFreeSocket();
   if (sock != -1) {
-    DrvWiFi->ES_WIFI_SetConnectionParam(sock, ES_WIFI_TCP_CONNECTION, _port);
-    DrvWiFi->ES_WIFI_StartServerSingleConn(sock, COMM_SPI);
+    if (DrvWiFi->ES_WIFI_SetConnectionParam(sock, ES_WIFI_TCP_CONNECTION, _port)) {
+      DrvWiFi->ES_WIFI_StartServerSingleConn(sock, COMM_SPI);
+    }
   }
 }
 
@@ -79,9 +80,10 @@ WiFiClient WiFiServer::available(byte *status)
 
   //server not in listen state, restart it
   if (cycle_server_down++ > TH_SERVER_DOWN) {
-    DrvWiFi->ES_WIFI_SetConnectionParam(sock, ES_WIFI_TCP_CONNECTION, _port);
-    DrvWiFi->ES_WIFI_StartServerSingleConn(sock, COMM_SPI);
-    cycle_server_down = 0;
+    if (DrvWiFi->ES_WIFI_SetConnectionParam(sock, ES_WIFI_TCP_CONNECTION, _port)) {
+      DrvWiFi->ES_WIFI_StartServerSingleConn(sock, COMM_SPI);
+      cycle_server_down = 0;
+    }
   }
 
   if (_status == SOCKET_BUSY) {

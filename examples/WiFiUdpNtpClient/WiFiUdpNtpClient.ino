@@ -48,8 +48,6 @@ const int NTP_PACKET_SIZE = 48;       // NTP time stamp is in the first 48 bytes
 
 byte packetBuffer[ NTP_PACKET_SIZE];  // buffer to hold incoming and outgoing packets
 
-bool ConnectionCreate = false;
-
 // An UDP instance to let us send and receive packets over UDP
 WiFiUDP Udp;
 
@@ -162,13 +160,12 @@ void sendNTPpacket(IPAddress& address) {
   packetBuffer[15]  = 52;
 
   // all NTP fields have been given values, now
-  // you can send a packet requesting a timestamp:
-  if (!ConnectionCreate) {
-    // NTP requests are sent to port 123
-    Udp.beginPacket(address, 123);
-    ConnectionCreate = true;
+  // a packet requesting a timestamp can be sent:
+  // NTP requests are sent to port 123
+  if (Udp.beginPacket(address, 123) == 1) {
+    Udp.write(packetBuffer, NTP_PACKET_SIZE);
+    Udp.endPacket();
   }
-  Udp.write(packetBuffer, NTP_PACKET_SIZE);
 }
 
 void printWifiStatus() {
