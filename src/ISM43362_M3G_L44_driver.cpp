@@ -102,7 +102,7 @@ IsmDrvClass::IsmDrvClass(SPIClass *SPIx, uint8_t cs, uint8_t spiIRQ,
 * @param  wakeup  : wakeup pin
 * @retval None
 */
-IsmDrvClass::IsmDrvClass(HardwareSerial *UARTx,  uint8_t reset, uint8_t wakeup)
+IsmDrvClass::IsmDrvClass(Uart *UARTx,  uint8_t reset, uint8_t wakeup)
 {
   /* Call UART constructor                                                   */
   /* TODO: neither developed nor tested on DISCO L475VG IOT because the WiFi

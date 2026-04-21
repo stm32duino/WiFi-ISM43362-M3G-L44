@@ -340,7 +340,7 @@ class IsmDrvClass : public WiFiDrvClass {
   public:
 
     IsmDrvClass(SPIClass *SPIx, uint8_t cs, uint8_t spiIRQ, uint8_t reset, uint8_t wakeup);
-    IsmDrvClass(HardwareSerial *UARTx, uint8_t reset, uint8_t wakeup);
+    IsmDrvClass(Uart *UARTx, uint8_t reset, uint8_t wakeup);
     IsmDrvClass(uint8_t tx, uint8_t rx, uint8_t reset, uint8_t wakeup);
 
     virtual ES_WIFI_Status_t ES_WIFI_Init();

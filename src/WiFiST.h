@@ -51,7 +51,7 @@ class WiFiClass {
     // WiFi device with SPI
     WiFiClass(SPIClass *SPIx, uint8_t cs, uint8_t spiIRQ, uint8_t reset, uint8_t wakeup);
     // WiFi device with UART
-    WiFiClass(HardwareSerial *UARTx, uint8_t reset, uint8_t wakeup);
+    WiFiClass(Uart *UARTx, uint8_t reset, uint8_t wakeup);
     // WiFi device with USB
     WiFiClass(uint8_t tx, uint8_t rx, uint8_t reset, uint8_t wakeup);
 

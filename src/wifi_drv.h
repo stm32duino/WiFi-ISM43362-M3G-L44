@@ -39,6 +39,14 @@
 #include <stdint.h>
 #include "IPAddress.h"
 #include "es_wifi_conf.h"
+#include "stm32_def.h"
+
+/* Ensure core backward compatibility */
+#if defined(STM32_CORE_VERSION) && (STM32_CORE_VERSION > 0x020C0000)
+  using namespace arduino;
+#else
+  #define Uart HardwareSerial
+#endif
 
 /* Exported typedef ----------------------------------------------------------*/
 

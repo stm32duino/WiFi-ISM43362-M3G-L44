@@ -73,7 +73,7 @@ WiFiClass::WiFiClass(SPIClass *SPIx, uint8_t cs, uint8_t spiIRQ, uint8_t reset, 
 * @param  wakeup  : wakeup pin
 * @retval None
 */
-WiFiClass::WiFiClass(HardwareSerial *UARTx, uint8_t reset, uint8_t wakeup)
+WiFiClass::WiFiClass(Uart *UARTx, uint8_t reset, uint8_t wakeup)
 {
   DrvWiFi = new IsmDrvClass(UARTx, reset, wakeup);
   wifi_status = WL_NO_SHIELD;
