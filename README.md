@@ -1,6 +1,9 @@
 # WiFi-ISM43362-M3G-L44
 Arduino library to support the Wi-Fi module Inventek ISM43362-M3G-L44 (802.11 b/g/n)
 
+> [!IMPORTANT]
+> This repository has been archived because this product is obsolete.
+
 ## API
 
 The API is based on the Arduino WiFi API. Refer you to the documentations at
